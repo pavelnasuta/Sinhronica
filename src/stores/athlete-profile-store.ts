@@ -40,15 +40,7 @@ function getStorage(): SafeStorage {
 }
 
 function readProfile(storage: SafeStorage): AthleteProfile | null {
-  const raw = storage.getItem(STORAGE_KEY)
-  if (!raw) return null
-
-  try {
-    const saved = z.object({ version: z.literal(1), profile: athleteProfileSchema }).safeParse(JSON.parse(raw))
-    return saved.success ? saved.data.profile : null
-  } catch {
-    return null
-  }
+  return parsePersistedProfile(storage.getItem(STORAGE_KEY))
 }
 
 function parseBirthDate(value: string): { year: number; month: number; day: number } | null {
@@ -70,6 +62,24 @@ export function isValidBirthDate(value: string, now = new Date()): boolean {
 
   const today = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate())
   return Date.UTC(birthDate.year, birthDate.month - 1, birthDate.day) <= today
+}
+
+export function formatLocalDate(date = new Date()): string {
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
+
+export function parsePersistedProfile(raw: string | null, now = new Date()): AthleteProfile | null {
+  if (!raw) return null
+
+  try {
+    const saved = z.object({ version: z.literal(1), profile: athleteProfileSchema }).safeParse(JSON.parse(raw))
+    return saved.success && isValidBirthDate(saved.data.profile.birthDate, now) ? saved.data.profile : null
+  } catch {
+    return null
+  }
 }
 
 export function calculateAge(value: string, now = new Date()): number | null {

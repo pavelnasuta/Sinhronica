@@ -4,7 +4,7 @@ import { type FormEvent, useEffect, useRef, useState } from 'react'
 import { Button } from '../../components/ui/button'
 import { Input } from '../../components/ui/input'
 import { Label } from '../../components/ui/label'
-import { isValidBirthDate, useAthleteProfileStore } from '../../stores/athlete-profile-store'
+import { formatLocalDate, isValidBirthDate, useAthleteProfileStore } from '../../stores/athlete-profile-store'
 
 const slides = [
   {
@@ -102,7 +102,7 @@ export function Onboarding() {
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="athlete-birth-date">Дата рождения</Label>
-                <Input id="athlete-birth-date" type="date" autoComplete="bday" max={new Date().toISOString().slice(0, 10)} value={draft.birthDate} onChange={(event) => updateField('birthDate', event.target.value)} aria-invalid={Boolean(errors.birthDate)} aria-describedby={errors.birthDate ? 'athlete-birth-date-error' : undefined} />
+                <Input id="athlete-birth-date" type="date" autoComplete="bday" max={formatLocalDate()} value={draft.birthDate} onChange={(event) => updateField('birthDate', event.target.value)} aria-invalid={Boolean(errors.birthDate)} aria-describedby={errors.birthDate ? 'athlete-birth-date-error' : undefined} />
                 {errors.birthDate ? <p id="athlete-birth-date-error" className="text-sm text-destructive" role="alert">{errors.birthDate}</p> : null}
               </div>
               <div className="grid gap-2">
