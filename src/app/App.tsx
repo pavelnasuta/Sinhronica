@@ -23,8 +23,8 @@ function useAppliedTheme() {
     const applyTheme = () => {
       const isDark = theme === 'dark' || (theme === 'system' && media?.matches)
       document.documentElement.classList.toggle('dark', Boolean(isDark))
-      document.documentElement.dataset.theme = theme
-      document.querySelector('meta[name="theme-color"]')?.setAttribute('content', isDark ? '#0f172a' : '#f8fafc')
+      document.documentElement.dataset.theme = isDark ? 'dark' : 'light'
+      document.querySelector('meta[name="theme-color"]')?.setAttribute('content', isDark ? '#2446CA' : '#F5F8FF')
     }
 
     applyTheme()
@@ -60,15 +60,31 @@ function OfflineStatus() {
 
 function HomePage() {
   return (
-    <section className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr] lg:items-center">
-      <div className="space-y-4">
-        <p className="text-sm font-medium text-primary">Стартовая основа</p>
-        <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">Собирайте проверяемые MVP быстрее.</h1>
-        <p className="max-w-xl text-base leading-7 text-muted-foreground">Мобильная оболочка, локальное хранение и доступные компоненты уже готовы к следующему продуктному экрану.</p>
+    <section className="mx-auto grid max-w-3xl gap-5">
+      <div className="space-y-3">
+        <p className="text-xs font-extrabold uppercase tracking-[0.09em] text-[color:var(--eyebrow)]">Моя спортивная траектория</p>
+        <h1 className="text-3xl font-extrabold tracking-[-0.04em] sm:text-4xl">Синхроника</h1>
+        <p className="max-w-xl text-base leading-7 text-muted-foreground">Тренировки, фигуры и личный прогресс — в одном ритме.</p>
       </div>
-      <Card>
-        <CardHeader><CardTitle>Что уже есть</CardTitle><CardDescription>Без сервера, ключей и внешнего трекинга.</CardDescription></CardHeader>
-        <CardContent><ul className="space-y-2 text-sm text-muted-foreground"><li>• Светлая, тёмная и системная темы</li><li>• Адаптивная клавиатурная навигация</li><li>• Компоненты для форм, диалогов и статусов</li></ul></CardContent>
+      <section className="sinhronica-hero relative overflow-hidden rounded-[var(--radius-xl)] p-5 text-white sm:p-6" aria-label="О приложении">
+        <div className="relative z-10 max-w-md space-y-2">
+          <p className="text-sm font-semibold text-cyan-100">Твоя спортивная траектория</p>
+          <h2 className="text-xl font-extrabold tracking-[-0.025em]">Новый тренировочный дневник уже в разработке</h2>
+          <p className="text-sm leading-6 text-blue-50">Система готова к экрану тренировок, библиотеке фигур и фиксации прогресса — без выдуманных результатов.</p>
+        </div>
+      </section>
+      <Card className="rounded-[var(--radius-lg)] border-[color:var(--stroke)] bg-card shadow-[var(--shadow-card)]">
+        <CardHeader>
+          <CardTitle className="text-xl tracking-[-0.025em]">Основа приложения</CardTitle>
+          <CardDescription>Тёмная и светлая темы, локальное хранение и доступные компоненты уже работают без сервера.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <ul className="grid gap-3 text-sm text-muted-foreground sm:grid-cols-3">
+            <li className="rounded-[var(--radius-md)] bg-secondary p-4"><strong className="block text-foreground">Дневник</strong>Записи о тренировках.</li>
+            <li className="rounded-[var(--radius-md)] bg-secondary p-4"><strong className="block text-foreground">Фигуры</strong>Обучающие материалы.</li>
+            <li className="rounded-[var(--radius-md)] bg-secondary p-4"><strong className="block text-foreground">Прогресс</strong>Личные цели и динамика.</li>
+          </ul>
+        </CardContent>
       </Card>
     </section>
   )

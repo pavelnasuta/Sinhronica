@@ -8,7 +8,7 @@ type DeferredInstallEvent = Event & {
   userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>
 }
 
-const DISMISSED_INSTALL_PROMPT_KEY = 'mvp-pwa-install-prompt-dismissed'
+const DISMISSED_INSTALL_PROMPT_KEY = 'sinhronica:install-prompt-dismissed:v1'
 
 function isIos() {
   return /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)

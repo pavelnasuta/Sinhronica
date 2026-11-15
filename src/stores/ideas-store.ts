@@ -17,7 +17,7 @@ export type IdeasState = {
   hydrate: () => void
 }
 
-const STORAGE_KEY = 'mvp-pwa-starter:ideas:v1'
+const STORAGE_KEY = 'sinhronica:ideas:v1'
 
 const unavailableStorage: SafeStorage = {
   getItem: () => null,

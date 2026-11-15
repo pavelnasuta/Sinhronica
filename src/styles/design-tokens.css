@@ -1,0 +1,150 @@
+:root,
+[data-theme='dark'] {
+  color-scheme: dark;
+  --brand-cyan: #37ddf4;
+  --brand-turquoise: #00d8ea;
+  --brand-blue: #1263dc;
+  --brand-indigo: #2446ca;
+  --brand-violet: #7e38fa;
+  --brand-gold: #ffde89;
+
+  --bg-app: #08143b;
+  --bg-secondary: #101f52;
+  --surface: #14265d;
+  --surface-raised: #1a316d;
+  --text-primary: #f6f8ff;
+  --text-secondary: #c3d0f4;
+  --text-muted: #a0b2db;
+  --text-on-bright: #08143b;
+  --stroke: rgba(191, 220, 255, 0.16);
+  --stroke-strong: rgba(191, 220, 255, 0.29);
+  --success: #3de2bd;
+  --warning: #ffde89;
+  --danger: #ff8da2;
+  --focus: #37ddf4;
+  --eyebrow: #37ddf4;
+
+  --gradient-brand: linear-gradient(125deg, #00beeb 0%, #1263dc 38%, #5636dc 72%, #922cfa 100%);
+  --gradient-ocean: linear-gradient(145deg, #10d7ed 0%, #008ddb 35%, #073eba 100%);
+  --gradient-depth: linear-gradient(155deg, #1263dc 0%, #1935ac 54%, #7129e5 100%);
+  --gradient-primary: linear-gradient(110deg, #52e8f6 0%, #17b4ec 100%);
+  --gradient-achievement: linear-gradient(120deg, #fff1bc 0%, #ffcb67 100%);
+  --gradient-page: radial-gradient(ellipse at 100% 0%, rgba(110, 43, 230, 0.18), transparent 42%),
+    radial-gradient(ellipse at 0% 25%, rgba(12, 132, 210, 0.13), transparent 48%);
+
+  --shadow-card: 0 10px 30px rgba(1, 7, 37, 0.2);
+  --shadow-glow: 0 0 24px rgba(55, 221, 244, 0.16);
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 22px;
+  --radius-xl: 28px;
+  --motion-fast: 140ms;
+  --motion-normal: 240ms;
+  --content-max: 480px;
+
+  /* shadcn/Tailwind bridge */
+  --background: 226 76% 13%;
+  --foreground: 227 100% 98%;
+  --card: 225 65% 22%;
+  --card-foreground: 227 100% 98%;
+  --popover: 225 65% 22%;
+  --popover-foreground: 227 100% 98%;
+  --primary: 187 90% 59%;
+  --primary-foreground: 226 76% 13%;
+  --secondary: 223 61% 26%;
+  --secondary-foreground: 227 100% 98%;
+  --muted: 223 61% 26%;
+  --muted-foreground: 224 69% 86%;
+  --accent: 262 95% 60%;
+  --accent-foreground: 0 0% 100%;
+  --destructive: 349 100% 78%;
+  --destructive-foreground: 226 76% 13%;
+  --border: 220 58% 76% / 16%;
+  --input: 220 58% 76% / 29%;
+  --ring: 187 90% 59%;
+  --radius: 1.375rem;
+  --header-background: rgba(8, 20, 59, 0.9);
+}
+
+[data-theme='light'] {
+  color-scheme: light;
+  --bg-app: #f5f8ff;
+  --bg-secondary: #eaf1ff;
+  --surface: #ffffff;
+  --surface-raised: #f6f9ff;
+  --text-primary: #0c1c50;
+  --text-secondary: #33446e;
+  --text-muted: #506085;
+  --text-on-bright: #08143b;
+  --stroke: rgba(22, 54, 123, 0.12);
+  --stroke-strong: rgba(22, 54, 123, 0.23);
+  --success: #12755d;
+  --warning: #805600;
+  --danger: #bb2946;
+  --focus: #1263dc;
+  --eyebrow: #1263dc;
+  --gradient-page: radial-gradient(ellipse at 100% 0%, rgba(126, 56, 250, 0.07), transparent 42%),
+    radial-gradient(ellipse at 0% 25%, rgba(0, 190, 235, 0.08), transparent 48%);
+  --shadow-card: 0 10px 28px rgba(25, 49, 130, 0.08);
+  --shadow-glow: 0 0 24px rgba(55, 221, 244, 0.1);
+
+  --background: 222 100% 98%;
+  --foreground: 226 74% 18%;
+  --card: 0 0% 100%;
+  --card-foreground: 226 74% 18%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 226 74% 18%;
+  --primary: 187 90% 59%;
+  --primary-foreground: 226 76% 13%;
+  --secondary: 220 100% 96%;
+  --secondary-foreground: 226 74% 18%;
+  --muted: 220 100% 96%;
+  --muted-foreground: 223 37% 32%;
+  --accent: 262 95% 60%;
+  --accent-foreground: 0 0% 100%;
+  --destructive: 348 64% 45%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 220 58% 40% / 12%;
+  --input: 220 58% 40% / 23%;
+  --ring: 216 85% 47%;
+  --header-background: rgba(245, 248, 255, 0.9);
+}
+
+.sinhronica-shell {
+  background: var(--gradient-page), var(--bg-app);
+}
+
+.sinhronica-header {
+  background: var(--header-background);
+  border-color: var(--stroke);
+}
+
+.sinhronica-brand-mark {
+  background: var(--gradient-depth);
+  box-shadow: var(--shadow-glow);
+}
+
+.sinhronica-primary-action {
+  background: var(--gradient-primary);
+  color: var(--text-on-bright);
+}
+
+.sinhronica-hero {
+  background: var(--gradient-depth);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: var(--shadow-card);
+}
+
+.sinhronica-mobile-nav {
+  background: color-mix(in srgb, var(--bg-secondary) 94%, transparent);
+  border-color: var(--stroke);
+}
+
+.sinhronica-nav-active {
+  background: var(--surface-raised);
+  color: var(--text-primary);
+}
+
+.sinhronica-nav-active svg {
+  color: var(--brand-cyan);
+}

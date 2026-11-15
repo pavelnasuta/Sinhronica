@@ -93,6 +93,15 @@ describe('PwaInstallPrompt', () => {
     expect(screen.getByRole('status', { name: 'Установка приложения' })).toHaveTextContent('Поделиться')
   })
 
+  it('does not inherit an install-prompt dismissal from another starter-derived app', () => {
+    window.localStorage.setItem('mvp-pwa-install-prompt-dismissed', 'true')
+    setNavigatorProperty('userAgent', 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15')
+
+    render(<PwaInstallPrompt />)
+
+    expect(screen.getByRole('status', { name: 'Установка приложения' })).toBeVisible()
+  })
+
   it('does not show again after the visitor chooses later', async () => {
     setNavigatorProperty('userAgent', 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15')
     const user = userEvent.setup()

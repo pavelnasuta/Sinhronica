@@ -2,7 +2,7 @@ import { beforeEach, expect, it } from 'vitest'
 
 import { usePreferencesStore } from './preferences-store'
 
-const STORAGE_KEY = 'mvp-pwa-starter:preferences:v1'
+const STORAGE_KEY = 'sinhronica:preferences:v1'
 
 beforeEach(() => {
   window.localStorage.clear()

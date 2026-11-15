@@ -9,7 +9,7 @@ type PreferencesState = {
   setTheme: (theme: ThemePreference) => void
 }
 
-const STORAGE_KEY = 'mvp-pwa-starter:preferences:v1'
+const STORAGE_KEY = 'sinhronica:preferences:v1'
 
 const unavailableStorage: SafeStorage = {
   getItem: () => null,

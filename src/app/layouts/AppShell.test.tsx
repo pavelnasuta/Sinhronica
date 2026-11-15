@@ -12,6 +12,7 @@ it('renders a labelled mobile bottom navigation with every app route', () => {
 
   const navigation = screen.getByRole('navigation', { name: 'Мобильная навигация' })
 
+  expect(screen.getByRole('link', { name: 'Синхроника, перейти на главную' })).toBeVisible()
   expect(navigation).toHaveTextContent('Главная')
   expect(navigation).toHaveTextContent('Идеи')
   expect(navigation).toHaveTextContent('Галерея')

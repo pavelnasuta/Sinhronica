@@ -3,7 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { ImportPayload } from '../types/idea'
 import { useIdeasStore } from './ideas-store'
 
-const STORAGE_KEY = 'mvp-pwa-starter:ideas:v1'
+const STORAGE_KEY = 'sinhronica:ideas:v1'
 
 const draft = {
   title: 'Проверить гипотезу',
