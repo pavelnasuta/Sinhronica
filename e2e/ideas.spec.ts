@@ -1,5 +1,23 @@
 import { expect, test } from '@playwright/test'
 
+const athleteProfile = {
+  name: 'Алина',
+  birthDate: '2014-11-16',
+  city: 'Казань',
+}
+
+const athleteProfileStorageKey = 'sinhronica:athlete-profile:v1'
+
+async function seedAthleteProfile(page: import('@playwright/test').Page) {
+  await page.addInitScript(({ key, profile }) => {
+    window.localStorage.setItem(key, JSON.stringify({ version: 1, profile }))
+  }, { key: athleteProfileStorageKey, profile: athleteProfile })
+}
+
+test.beforeEach(async ({ page }) => {
+  await seedAthleteProfile(page)
+})
+
 test('creates an idea that remains after a page reload', async ({ page }) => {
   await page.goto('/starter-kit/')
   await page.getByRole('link', { name: 'Идеи' }).click()
@@ -52,6 +70,9 @@ test('shows iPad installation guidance for a desktop-style Safari user agent', a
     userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 Version/17.0 Safari/605.1.15',
     viewport: { width: 390, height: 844 },
   })
+  await context.addInitScript(({ key, profile }) => {
+    window.localStorage.setItem(key, JSON.stringify({ version: 1, profile }))
+  }, { key: athleteProfileStorageKey, profile: athleteProfile })
   await context.addInitScript(() => {
     Object.defineProperty(navigator, 'platform', { configurable: true, value: 'MacIntel' })
     Object.defineProperty(navigator, 'maxTouchPoints', { configurable: true, value: 5 })

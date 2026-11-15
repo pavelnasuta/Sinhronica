@@ -16,7 +16,7 @@ export default defineConfig({
       workbox: {
         clientsClaim: true,
         skipWaiting: false,
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff,woff2}'],
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,webp,woff,woff2}'],
       },
       includeAssets: [
         'favicon.ico',

@@ -4,8 +4,10 @@ import { Toaster } from 'sonner'
 import { PwaInstallPrompt } from '../components/pwa-install-prompt'
 import { PwaUpdateNotice } from '../components/pwa-update-notice'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card'
+import { Onboarding } from '../features/onboarding/Onboarding'
 import { GalleryPage } from '../features/gallery/GalleryPage'
 import { IdeasPage } from '../features/ideas/IdeasPage'
+import { useAthleteProfileStore } from '../stores/athlete-profile-store'
 import { usePreferencesStore } from '../stores/preferences-store'
 import { AppShell } from './layouts/AppShell'
 import { appRoutes, type RouteName } from './routes'
@@ -58,12 +60,12 @@ function OfflineStatus() {
   )
 }
 
-function HomePage() {
+function HomePage({ name }: { name: string }) {
   return (
     <section className="mx-auto grid max-w-3xl gap-5">
       <div className="space-y-3">
         <p className="text-xs font-extrabold uppercase tracking-[0.09em] text-[color:var(--eyebrow)]">Моя спортивная траектория</p>
-        <h1 className="text-3xl font-extrabold tracking-[-0.04em] sm:text-4xl">Синхроника</h1>
+        <h1 className="text-3xl font-extrabold tracking-[-0.04em] sm:text-4xl">Привет, {name}</h1>
         <p className="max-w-xl text-base leading-7 text-muted-foreground">Тренировки, фигуры и личный прогресс — в одном ритме.</p>
       </div>
       <section className="sinhronica-hero relative overflow-hidden rounded-[var(--radius-xl)] p-5 text-white sm:p-6" aria-label="О приложении">
@@ -92,6 +94,7 @@ function HomePage() {
 
 export function App() {
   const [activeRoute, setActiveRoute] = useState<RouteName>(routeFromHash)
+  const athleteProfile = useAthleteProfileStore((state) => state.profile)
   useAppliedTheme()
 
   useEffect(() => {
@@ -105,7 +108,9 @@ export function App() {
     setActiveRoute(route)
   }
 
-  const page = activeRoute === 'gallery' ? <GalleryPage /> : activeRoute === 'ideas' ? <IdeasPage /> : <HomePage />
+  if (!athleteProfile) return <><OfflineStatus /><Onboarding /><PwaUpdateNotice /><Toaster richColors position="top-center" closeButton /></>
+
+  const page = activeRoute === 'gallery' ? <GalleryPage /> : activeRoute === 'ideas' ? <IdeasPage /> : <HomePage name={athleteProfile.name} />
 
   return <><OfflineStatus /><PwaInstallPrompt /><AppShell activeRoute={activeRoute} onNavigate={navigate}>{page}</AppShell><PwaUpdateNotice /><Toaster richColors position="top-center" closeButton /></>
 }
