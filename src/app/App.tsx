@@ -113,5 +113,5 @@ export function App() {
 
   const page = activeRoute === 'gallery' ? <GalleryPage /> : activeRoute === 'ideas' ? <IdeasPage /> : <HomePage name={athleteProfile.name} />
 
-  return <><OfflineStatus /><PwaInstallPrompt /><AppShell activeRoute={activeRoute} onNavigate={navigate}>{page}</AppShell><PwaUpdateNotice /><Toaster richColors position="top-center" closeButton /></>
+  return <><OfflineStatus /><PwaInstallPrompt /><AppShell activeRoute={activeRoute} athleteProfile={athleteProfile} onNavigate={navigate}>{page}</AppShell><PwaUpdateNotice /><Toaster richColors position="top-center" closeButton /></>
 }

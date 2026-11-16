@@ -1,7 +1,8 @@
-import { House, Lightbulb, PanelsTopLeft } from 'lucide-react'
+import { House, Lightbulb, PanelsTopLeft, Settings } from 'lucide-react'
 import { type ReactNode } from 'react'
 
-import { ThemeToggle } from '../../components/theme-toggle'
+import type { AthleteProfile } from '../../stores/athlete-profile-store'
+import { SportRankBadge } from '../../features/profile/sport-rank-badge'
 import { appRoutes, type RouteName } from '../routes'
 
 const routeIcons = {
@@ -10,24 +11,25 @@ const routeIcons = {
   gallery: PanelsTopLeft,
 }
 
-const brandIcon = `${import.meta.env.BASE_URL}icons/sinhronica-v1-icon-192.png`
-
 type AppShellProps = {
   activeRoute: RouteName
+  athleteProfile: AthleteProfile
   onNavigate: (route: RouteName) => void
   children: ReactNode
 }
 
-export function AppShell({ activeRoute, onNavigate, children }: AppShellProps) {
+export function AppShell({ activeRoute, athleteProfile, onNavigate, children }: AppShellProps) {
   return (
     <div className="sinhronica-shell flex min-h-screen flex-col bg-background">
       <header className="sinhronica-header border-b bg-background/95 backdrop-blur">
         <div className="mx-auto flex min-h-16 max-w-5xl items-center justify-between gap-3 px-4 py-2 sm:px-6">
-          <a href="#home" onClick={() => onNavigate('home')} className="inline-flex min-h-11 shrink-0 items-center gap-2 rounded-[var(--radius-md)] px-2 text-left font-extrabold hover:bg-muted" aria-label="Синхроника, перейти на главную">
-            <span className="sinhronica-brand-mark grid h-9 w-9 place-items-center overflow-hidden rounded-xl" aria-hidden="true"><img src={brandIcon} alt="" className="h-full w-full" /></span>
-            <span className="hidden sm:inline">Синхроника</span>
+          <div className="min-w-0">
+            <p className="truncate text-base font-extrabold tracking-[-0.02em]">{athleteProfile.name}</p>
+            <div className="mt-1"><SportRankBadge rank={athleteProfile.sportRank} /></div>
+          </div>
+          <a href="#settings" onClick={() => onNavigate('settings')} className="inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-[var(--radius-md)] text-muted-foreground transition-colors hover:bg-muted hover:text-foreground" aria-label="Настройки">
+            <Settings className="h-5 w-5" aria-hidden="true" />
           </a>
-          <ThemeToggle />
         </div>
         <nav className="mx-auto hidden max-w-5xl gap-1 overflow-x-auto px-4 pb-2 sm:flex sm:px-6" aria-label="Основная навигация">
           {appRoutes.map((route) => (

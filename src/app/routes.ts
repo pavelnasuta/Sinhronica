@@ -1,7 +1,8 @@
-export type RouteName = 'home' | 'ideas' | 'gallery'
+export type RouteName = 'home' | 'ideas' | 'gallery' | 'settings'
+export type PrimaryRouteName = Exclude<RouteName, 'settings'>
 
 export type AppRoute = {
-  name: RouteName
+  name: PrimaryRouteName
   label: string
 }
 
