@@ -3,16 +3,19 @@ import { Toaster } from 'sonner'
 
 import { PwaInstallPrompt } from '../components/pwa-install-prompt'
 import { PwaUpdateNotice } from '../components/pwa-update-notice'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card'
+import { AchievementsPage } from '../features/achievements/AchievementsPage'
 import { FiguresCalculatorPage } from '../features/figures/FiguresCalculatorPage'
 import { FiguresCatalogPage } from '../features/figures/FiguresCatalogPage'
+import { HomePage } from '../features/home/HomePage'
 import { Onboarding } from '../features/onboarding/Onboarding'
-import { UsefulPage } from '../features/useful/UsefulPage'
-import { AchievementsPage } from '../features/achievements/AchievementsPage'
 import { RoutinesPage } from '../features/routines/RoutinesPage'
 import { SettingsPage } from '../features/settings/SettingsPage'
+import { UsefulPage } from '../features/useful/UsefulPage'
 import { hasSportRank, useAthleteProfileStore } from '../stores/athlete-profile-store'
+import { useAchievementsStore } from '../stores/achievements-store'
+import { useFigureProgressStore } from '../stores/figure-progress-store'
 import { usePreferencesStore } from '../stores/preferences-store'
+import { useRoutinesStore } from '../stores/routines-store'
 import { AppShell } from './layouts/AppShell'
 import { appRoutes, type RouteName } from './routes'
 
@@ -58,48 +61,18 @@ function OfflineStatus() {
 
   if (isOnline) return null
 
-  return (
-    <p className="border-b border-amber-500/40 bg-amber-500/10 px-4 py-2 text-center text-sm text-foreground" role="status" aria-label="Подключение к интернету">
-      Нет подключения к интернету. Данные доступны на этом устройстве.
-    </p>
-  )
-}
-
-function HomePage({ name }: { name: string }) {
-  return (
-    <section className="mx-auto grid max-w-3xl gap-5">
-      <div className="space-y-3">
-        <p className="text-xs font-extrabold uppercase tracking-[0.09em] text-[color:var(--eyebrow)]">Моя спортивная траектория</p>
-        <h1 className="text-3xl font-extrabold tracking-[-0.04em] sm:text-4xl">Привет, {name}</h1>
-        <p className="max-w-xl text-base leading-7 text-muted-foreground">Тренировки, фигуры и личный прогресс — в одном ритме.</p>
-      </div>
-      <section className="sinhronica-hero relative overflow-hidden rounded-[var(--radius-xl)] p-5 text-white sm:p-6" aria-label="О приложении">
-        <div className="relative z-10 max-w-md space-y-2">
-          <p className="text-sm font-semibold text-cyan-100">Твоя спортивная траектория</p>
-          <h2 className="text-xl font-extrabold tracking-[-0.025em]">Новый тренировочный дневник уже в разработке</h2>
-          <p className="text-sm leading-6 text-blue-50">Система готова к экрану тренировок, библиотеке фигур и фиксации прогресса — без выдуманных результатов.</p>
-        </div>
-      </section>
-      <Card className="rounded-[var(--radius-lg)] border-[color:var(--stroke)] bg-card shadow-[var(--shadow-card)]">
-        <CardHeader>
-          <CardTitle className="text-xl tracking-[-0.025em]">Основа приложения</CardTitle>
-          <CardDescription>Тёмная и светлая темы, локальное хранение и доступные компоненты уже работают без сервера.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <ul className="grid gap-3 text-sm text-muted-foreground sm:grid-cols-3">
-            <li className="rounded-[var(--radius-md)] bg-secondary p-4"><strong className="block text-foreground">Дневник</strong>Записи о тренировках.</li>
-            <li className="rounded-[var(--radius-md)] bg-secondary p-4"><strong className="block text-foreground">Фигуры</strong>Обучающие материалы.</li>
-            <li className="rounded-[var(--radius-md)] bg-secondary p-4"><strong className="block text-foreground">Прогресс</strong>Личные цели и динамика.</li>
-          </ul>
-        </CardContent>
-      </Card>
-    </section>
-  )
+  return <p className="border-b border-amber-500/40 bg-amber-500/10 px-4 py-2 text-center text-sm text-foreground" role="status" aria-label="Подключение к интернету">Нет подключения к интернету. Данные доступны на этом устройстве.</p>
 }
 
 export function App() {
   const [activeRoute, setActiveRoute] = useState<RouteName>(routeFromHash)
   const athleteProfile = useAthleteProfileStore((state) => state.profile)
+  const routines = useRoutinesStore((state) => state.routines)
+  const hydrateRoutines = useRoutinesStore((state) => state.hydrate)
+  const figureProgress = useFigureProgressStore((state) => state.progress)
+  const hydrateFigureProgress = useFigureProgressStore((state) => state.hydrate)
+  const achievements = useAchievementsStore((state) => state.achievements)
+  const hydrateAchievements = useAchievementsStore((state) => state.hydrate)
   useAppliedTheme()
 
   useEffect(() => {
@@ -107,6 +80,12 @@ export function App() {
     window.addEventListener('hashchange', syncRoute)
     return () => window.removeEventListener('hashchange', syncRoute)
   }, [])
+
+  useEffect(() => {
+    hydrateRoutines()
+    hydrateFigureProgress()
+    hydrateAchievements()
+  }, [hydrateAchievements, hydrateFigureProgress, hydrateRoutines])
 
   const navigate = (route: RouteName) => {
     window.location.hash = route
@@ -118,8 +97,18 @@ export function App() {
 
   if (activeRoute === 'settings') return <><OfflineStatus /><SettingsPage onBack={() => navigate('home')} /><PwaUpdateNotice /><Toaster richColors position="top-center" closeButton /></>
 
-  const page = activeRoute === 'useful' ? <UsefulPage onNavigate={navigate} /> : activeRoute === 'figures-catalog' ? <FiguresCatalogPage onBack={() => navigate('useful')} /> : activeRoute === 'figures-calculator' ? <FiguresCalculatorPage onBack={() => navigate('useful')} /> : activeRoute === 'routines' ? <RoutinesPage /> : activeRoute === 'achievements' ? <AchievementsPage /> : <HomePage name={athleteProfile.name} />
+  const page = activeRoute === 'useful'
+    ? <UsefulPage onNavigate={navigate} />
+    : activeRoute === 'figures-catalog'
+      ? <FiguresCatalogPage onBack={() => navigate('useful')} />
+      : activeRoute === 'figures-calculator'
+        ? <FiguresCalculatorPage onBack={() => navigate('useful')} />
+        : activeRoute === 'routines'
+          ? <RoutinesPage />
+          : activeRoute === 'achievements'
+            ? <AchievementsPage />
+            : <HomePage profile={athleteProfile} routines={routines} figureProgress={figureProgress} achievements={achievements} onNavigate={navigate} />
   const navigationRoute = activeRoute === 'figures-catalog' || activeRoute === 'figures-calculator' ? 'useful' : activeRoute
 
-  return <><OfflineStatus /><PwaInstallPrompt /><AppShell activeRoute={navigationRoute} athleteProfile={athleteProfile} onNavigate={navigate}>{page}</AppShell><PwaUpdateNotice /><Toaster richColors position="top-center" closeButton /></>
+  return <><OfflineStatus /><PwaInstallPrompt /><AppShell activeRoute={navigationRoute} onNavigate={navigate}>{page}</AppShell><PwaUpdateNotice /><Toaster richColors position="top-center" closeButton /></>
 }

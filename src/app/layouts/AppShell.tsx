@@ -1,8 +1,6 @@
-import { House, Music2, Settings, Sparkles, Trophy } from 'lucide-react'
+import { House, Music2, Sparkles, Trophy } from 'lucide-react'
 import { type ReactNode } from 'react'
 
-import type { AthleteProfile } from '../../stores/athlete-profile-store'
-import { SportRankBadge } from '../../features/profile/sport-rank-badge'
 import { appRoutes, type RouteName } from '../routes'
 
 const routeIcons = {
@@ -14,32 +12,20 @@ const routeIcons = {
 
 type AppShellProps = {
   activeRoute: RouteName
-  athleteProfile: AthleteProfile
   onNavigate: (route: RouteName) => void
   children: ReactNode
 }
 
-export function AppShell({ activeRoute, athleteProfile, onNavigate, children }: AppShellProps) {
+export function AppShell({ activeRoute, onNavigate, children }: AppShellProps) {
   return (
     <div className="sinhronica-shell flex flex-col bg-background">
-      <header className="sinhronica-header border-b bg-background/95 backdrop-blur">
-        <div className="mx-auto flex min-h-16 max-w-5xl items-center justify-between gap-3 px-4 py-2 sm:px-6">
-          <div className="min-w-0">
-            <p className="truncate text-base font-extrabold tracking-[-0.02em]">{athleteProfile.name}</p>
-            <div className="mt-1"><SportRankBadge rank={athleteProfile.sportRank} /></div>
-          </div>
-          <a href="#settings" onClick={() => onNavigate('settings')} className="inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-[var(--radius-md)] text-muted-foreground transition-colors hover:bg-muted hover:text-foreground" aria-label="Настройки">
-            <Settings className="h-5 w-5" aria-hidden="true" />
+      <nav className="mx-auto hidden w-full max-w-5xl gap-1 border-b px-4 py-2 sm:flex sm:px-6" aria-label="Основная навигация">
+        {appRoutes.map((route) => (
+          <a key={route.name} href={`#${route.name}`} onClick={() => onNavigate(route.name)} aria-current={activeRoute === route.name ? 'page' : undefined} className={`inline-flex min-h-11 shrink-0 items-center rounded-[var(--radius-md)] px-4 text-sm font-semibold transition-colors ${activeRoute === route.name ? 'sinhronica-nav-active' : 'text-muted-foreground hover:bg-muted hover:text-foreground'}`}>
+            {route.label}
           </a>
-        </div>
-        <nav className="mx-auto hidden max-w-5xl gap-1 overflow-x-auto px-4 pb-2 sm:flex sm:px-6" aria-label="Основная навигация">
-          {appRoutes.map((route) => (
-            <a key={route.name} href={`#${route.name}`} onClick={() => onNavigate(route.name)} aria-current={activeRoute === route.name ? 'page' : undefined} className={`inline-flex min-h-11 shrink-0 items-center rounded-[var(--radius-md)] px-4 text-sm font-semibold transition-colors ${activeRoute === route.name ? 'sinhronica-nav-active' : 'text-muted-foreground hover:bg-muted hover:text-foreground'}`}>
-              {route.label}
-            </a>
-          ))}
-        </nav>
-      </header>
+        ))}
+      </nav>
       <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-6 pb-[calc(6rem+env(safe-area-inset-bottom))] sm:px-6 sm:py-8">
         <div key={activeRoute} className="sinhronica-screen" data-testid="screen-transition">{children}</div>
       </main>
