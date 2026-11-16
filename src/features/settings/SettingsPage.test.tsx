@@ -13,14 +13,20 @@ beforeEach(() => {
 })
 
 it('updates athlete profile and links feedback to Pavel', async () => {
-  const user = userEvent.setup()
   render(<SettingsPage onBack={vi.fn()} />)
+  expect(screen.getByText('Алина')).toBeVisible()
+  expect(screen.getAllByText('дельфиник')[0]).toBeVisible()
+  const user = userEvent.setup()
   await user.clear(screen.getByLabelText('Как тебя зовут?'))
   await user.type(screen.getByLabelText('Как тебя зовут?'), 'Маша')
   await user.selectOptions(screen.getByLabelText('Спортивный разряд'), 'КМС')
   await user.click(screen.getByRole('button', { name: 'Сохранить профиль' }))
   expect(useAthleteProfileStore.getState().profile).toMatchObject({ name: 'Маша', sportRank: 'КМС' })
+  expect(screen.getByText('Маша')).toBeVisible()
+  expect(screen.getAllByText('КМС')[0]).toBeVisible()
   expect(screen.getByRole('link', { name: 'Предложить доработку' })).toHaveAttribute('href', 'https://t.me/pavelnasuta')
+  expect(screen.getByTestId('settings-screen-transition')).toHaveClass('sinhronica-screen')
+  expect(screen.queryByRole('link', { name: 'Настройки' })).not.toBeInTheDocument()
   expect(screen.getByRole('presentation')).toHaveClass('object-contain')
 })
 

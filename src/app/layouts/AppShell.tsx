@@ -21,7 +21,7 @@ type AppShellProps = {
 
 export function AppShell({ activeRoute, athleteProfile, onNavigate, children }: AppShellProps) {
   return (
-    <div className="sinhronica-shell flex min-h-screen flex-col bg-background">
+    <div className="sinhronica-shell flex flex-col bg-background">
       <header className="sinhronica-header border-b bg-background/95 backdrop-blur">
         <div className="mx-auto flex min-h-16 max-w-5xl items-center justify-between gap-3 px-4 py-2 sm:px-6">
           <div className="min-w-0">
@@ -40,7 +40,9 @@ export function AppShell({ activeRoute, athleteProfile, onNavigate, children }: 
           ))}
         </nav>
       </header>
-      <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-6 pb-[calc(6rem+env(safe-area-inset-bottom))] sm:px-6 sm:py-8">{children}</main>
+      <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-6 pb-[calc(6rem+env(safe-area-inset-bottom))] sm:px-6 sm:py-8">
+        <div key={activeRoute} className="sinhronica-screen" data-testid="screen-transition">{children}</div>
+      </main>
       <footer className="hidden border-t px-4 py-4 text-center text-sm text-muted-foreground sm:block sm:px-6">Локальное приложение без сервера и внешнего трекинга.</footer>
       <nav className="sinhronica-mobile-nav fixed inset-x-0 bottom-0 z-50 border-t px-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-2 shadow-[0_-8px_24px_rgb(1_7_37_/_0.2)] backdrop-blur sm:hidden" aria-label="Мобильная навигация">
         <div className="mx-auto grid max-w-md grid-cols-4 gap-1">

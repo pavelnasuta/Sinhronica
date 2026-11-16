@@ -14,6 +14,7 @@ it('renders a personal header and labelled mobile bottom navigation', () => {
 
   expect(screen.getByText('Алина')).toBeVisible()
   expect(screen.getByText('дельфиник')).toBeVisible()
+  expect(screen.getByTestId('screen-transition')).toHaveClass('sinhronica-screen')
   expect(screen.getByRole('link', { name: 'Настройки' })).toHaveAttribute('href', '#settings')
   expect(screen.queryByRole('link', { name: 'Синхроника, перейти на главную' })).not.toBeInTheDocument()
   expect(navigation).toHaveTextContent('Главная')

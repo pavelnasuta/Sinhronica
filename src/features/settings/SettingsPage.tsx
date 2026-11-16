@@ -5,6 +5,7 @@ import { Button } from '../../components/ui/button'
 import { Input } from '../../components/ui/input'
 import { Label } from '../../components/ui/label'
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '../../components/ui/alert-dialog'
+import { SportRankBadge } from '../../features/profile/sport-rank-badge'
 import { downloadUserData, serializeUserData } from '../../lib/user-data'
 import { SPORT_RANKS, formatLocalDate, isValidBirthDate, useAthleteProfileStore } from '../../stores/athlete-profile-store'
 import { useIdeasStore } from '../../stores/ideas-store'
@@ -31,7 +32,7 @@ export function SettingsPage({ onBack }: SettingsPageProps) {
 
   useEffect(() => { hydrateIdeas(); hydrateAchievements() }, [hydrateAchievements, hydrateIdeas])
 
-  if (!draft) return null
+  if (!draft || !profile || !('sportRank' in profile)) return null
 
   const update = (key: keyof typeof draft, value: string) => setDraft((current) => current ? { ...current, [key]: value } : current)
   const saveProfile = (event: FormEvent) => {
@@ -64,7 +65,7 @@ export function SettingsPage({ onBack }: SettingsPageProps) {
   }
   const removeAll = () => { clearAchievements(); clearIdeas(); clearPreferences(); clearProfile(); onBack() }
 
-  return <main className="mx-auto grid w-full max-w-xl gap-5 pb-[calc(2rem+env(safe-area-inset-bottom))]">
+  return <div className="sinhronica-settings-shell flex flex-col bg-background"><header className="sinhronica-header border-b bg-background/95 backdrop-blur"><div className="mx-auto flex min-h-16 max-w-xl items-center px-4 py-2 sm:px-6"><div className="min-w-0"><p className="truncate text-base font-extrabold tracking-[-0.02em]">{profile.name}</p><div className="mt-1"><SportRankBadge rank={profile.sportRank} /></div></div></div></header><main className="sinhronica-screen mx-auto grid w-full max-w-xl gap-5 px-4 py-6 pb-[calc(2rem+env(safe-area-inset-bottom))] sm:px-6 sm:py-8" data-testid="settings-screen-transition">
     <div className="flex items-center gap-3"><Button variant="ghost" size="icon" onClick={onBack} aria-label="Назад"><ArrowLeft aria-hidden="true" /></Button><div><p className="text-xs font-extrabold uppercase tracking-[.1em] text-[color:var(--eyebrow)]">Синхроника</p><h1 className="text-3xl font-extrabold tracking-[-.04em]">Настройки</h1></div></div>
     <form className="rounded-[var(--radius-xl)] border bg-card p-5 shadow-[var(--shadow-card)]" onSubmit={saveProfile}><h2 className="text-xl font-extrabold">Мой профиль</h2><div className="mt-5 grid gap-4">
       <div><Label htmlFor="settings-name">Как тебя зовут?</Label><Input id="settings-name" value={draft.name} onChange={(e) => update('name', e.target.value)} /></div>
@@ -77,5 +78,5 @@ export function SettingsPage({ onBack }: SettingsPageProps) {
     <section className="rounded-[var(--radius-xl)] border bg-card p-5 shadow-[var(--shadow-card)]"><h2 className="text-xl font-extrabold">Данные</h2><p className="mt-2 text-sm leading-6 text-muted-foreground">Экспорт — это резервная копия для сохранения данных или переноса на другое устройство. Она не отправляется разработчикам.</p><Button type="button" variant="outline" className="mt-4 w-full" onClick={exportData}><Download aria-hidden="true" />Экспортировать данные</Button><AlertDialog><AlertDialogTrigger asChild><Button type="button" variant="destructive" className="mt-3 w-full"><Trash2 aria-hidden="true" />Удалить данные с устройства</Button></AlertDialogTrigger><AlertDialogContent><AlertDialogHeader><AlertDialogTitle>Удалить все данные?</AlertDialogTitle><AlertDialogDescription>Профиль, достижения и другие локальные данные на этом устройстве будут удалены без возможности восстановления.</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter><AlertDialogCancel>Отмена</AlertDialogCancel><AlertDialogAction onClick={removeAll}>Удалить мои данные</AlertDialogAction></AlertDialogFooter></AlertDialogContent></AlertDialog></section>
     <section className="rounded-[var(--radius-xl)] border bg-card p-5 shadow-[var(--shadow-card)]"><h2 className="text-xl font-extrabold">Авторы</h2><p className="mt-2 text-sm text-muted-foreground">Насута Павел · Насута Таисия</p><a href="https://t.me/pavelnasuta" target="_blank" rel="noreferrer" className="mt-4 inline-flex min-h-11 items-center gap-2 text-sm font-bold text-primary underline-offset-4 hover:underline"><Send className="h-4 w-4" aria-hidden="true"/>Предложить доработку</a></section>
     {message ? <p role="status" className="text-center text-sm text-muted-foreground">{message}</p> : null}
-  </main>
+  </main></div>
 }

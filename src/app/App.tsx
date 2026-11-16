@@ -29,7 +29,7 @@ function useAppliedTheme() {
       const isDark = theme === 'dark' || (theme === 'system' && media?.matches)
       document.documentElement.classList.toggle('dark', Boolean(isDark))
       document.documentElement.dataset.theme = isDark ? 'dark' : 'light'
-      document.querySelector('meta[name="theme-color"]')?.setAttribute('content', isDark ? '#2446CA' : '#F5F8FF')
+      document.querySelector('meta[name="theme-color"]')?.setAttribute('content', isDark ? '#08143B' : '#F5F8FF')
     }
 
     applyTheme()
