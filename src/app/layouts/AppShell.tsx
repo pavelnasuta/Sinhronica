@@ -1,4 +1,4 @@
-import { House, Lightbulb, PanelsTopLeft, Settings } from 'lucide-react'
+import { House, Lightbulb, PanelsTopLeft, Settings, Trophy } from 'lucide-react'
 import { type ReactNode } from 'react'
 
 import type { AthleteProfile } from '../../stores/athlete-profile-store'
@@ -9,6 +9,7 @@ const routeIcons = {
   home: House,
   ideas: Lightbulb,
   gallery: PanelsTopLeft,
+  achievements: Trophy,
 }
 
 type AppShellProps = {
@@ -42,7 +43,7 @@ export function AppShell({ activeRoute, athleteProfile, onNavigate, children }: 
       <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-6 pb-[calc(6rem+env(safe-area-inset-bottom))] sm:px-6 sm:py-8">{children}</main>
       <footer className="hidden border-t px-4 py-4 text-center text-sm text-muted-foreground sm:block sm:px-6">Локальное приложение без сервера и внешнего трекинга.</footer>
       <nav className="sinhronica-mobile-nav fixed inset-x-0 bottom-0 z-50 border-t px-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-2 shadow-[0_-8px_24px_rgb(1_7_37_/_0.2)] backdrop-blur sm:hidden" aria-label="Мобильная навигация">
-        <div className="mx-auto grid max-w-md grid-cols-3 gap-1">
+        <div className="mx-auto grid max-w-md grid-cols-4 gap-1">
           {appRoutes.map((route) => {
             const Icon = routeIcons[route.name]
             const isActive = activeRoute === route.name

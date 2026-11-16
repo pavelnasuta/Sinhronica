@@ -5,12 +5,14 @@ import { serializeUserData } from './user-data'
 describe('user data export', () => {
   it('serializes a versioned local backup without unrelated browser data', () => {
     const profile = { name: 'Алина', birthDate: '2014-11-16', city: 'Казань', sportRank: 'дельфиник' as const }
-    const payload = JSON.parse(serializeUserData({ profile, ideas: [], theme: 'dark' }))
+    const achievement = { id: 'combo-april', performedOn: '2026-04-10', eventName: 'Кубок Федерации', discipline: 'combo' as const, score: 9.25, medal: 'gold' as const, createdAt: '2026-04-10T10:00:00.000Z', updatedAt: '2026-04-10T10:00:00.000Z' }
+    const payload = JSON.parse(serializeUserData({ profile, ideas: [], achievements: [achievement], theme: 'dark' }))
 
     expect(payload).toMatchObject({
-      version: 1,
+      version: 2,
       profile,
       ideas: [],
+      achievements: [achievement],
       preferences: { theme: 'dark' },
     })
     expect(payload).toHaveProperty('exportedAt')

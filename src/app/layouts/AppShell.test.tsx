@@ -19,5 +19,6 @@ it('renders a personal header and labelled mobile bottom navigation', () => {
   expect(navigation).toHaveTextContent('Главная')
   expect(navigation).toHaveTextContent('Идеи')
   expect(navigation).toHaveTextContent('Галерея')
+  expect(navigation).toHaveTextContent('Достижения')
   expect(screen.getAllByRole('link', { name: 'Идеи' }).some((link) => link.getAttribute('aria-current') === 'page')).toBe(true)
 })

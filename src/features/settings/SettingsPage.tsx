@@ -8,6 +8,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { downloadUserData, serializeUserData } from '../../lib/user-data'
 import { SPORT_RANKS, formatLocalDate, isValidBirthDate, useAthleteProfileStore } from '../../stores/athlete-profile-store'
 import { useIdeasStore } from '../../stores/ideas-store'
+import { useAchievementsStore } from '../../stores/achievements-store'
 import { usePreferencesStore, type ThemePreference } from '../../stores/preferences-store'
 
 type SettingsPageProps = { onBack: () => void }
@@ -18,6 +19,8 @@ export function SettingsPage({ onBack }: SettingsPageProps) {
   const clearProfile = useAthleteProfileStore((state) => state.clear)
   const ideas = useIdeasStore((state) => state.ideas)
   const clearIdeas = useIdeasStore((state) => state.clear)
+  const achievements = useAchievementsStore((state) => state.achievements)
+  const clearAchievements = useAchievementsStore((state) => state.clear)
   const theme = usePreferencesStore((state) => state.theme)
   const setTheme = usePreferencesStore((state) => state.setTheme)
   const clearPreferences = usePreferencesStore((state) => state.clear)
@@ -38,7 +41,7 @@ export function SettingsPage({ onBack }: SettingsPageProps) {
     setMessage('Профиль сохранён.')
   }
   const exportData = () => {
-    downloadUserData(serializeUserData({ profile: draft, ideas, theme }))
+    downloadUserData(serializeUserData({ profile: draft, ideas, achievements, theme }))
     setMessage('Резервная копия скачана.')
   }
   const share = async () => {
@@ -55,7 +58,7 @@ export function SettingsPage({ onBack }: SettingsPageProps) {
     await navigator.clipboard?.writeText(data.url)
     setMessage('Ссылка скопирована.')
   }
-  const removeAll = () => { clearIdeas(); clearPreferences(); clearProfile(); onBack() }
+  const removeAll = () => { clearAchievements(); clearIdeas(); clearPreferences(); clearProfile(); onBack() }
 
   return <main className="mx-auto grid w-full max-w-xl gap-5 pb-[calc(2rem+env(safe-area-inset-bottom))]">
     <div className="flex items-center gap-3"><Button variant="ghost" size="icon" onClick={onBack} aria-label="Назад"><ArrowLeft aria-hidden="true" /></Button><div><p className="text-xs font-extrabold uppercase tracking-[.1em] text-[color:var(--eyebrow)]">Синхроника</p><h1 className="text-3xl font-extrabold tracking-[-.04em]">Настройки</h1></div></div>

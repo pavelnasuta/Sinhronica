@@ -6,6 +6,7 @@ import { PwaUpdateNotice } from '../components/pwa-update-notice'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card'
 import { Onboarding } from '../features/onboarding/Onboarding'
 import { GalleryPage } from '../features/gallery/GalleryPage'
+import { AchievementsPage } from '../features/achievements/AchievementsPage'
 import { IdeasPage } from '../features/ideas/IdeasPage'
 import { SettingsPage } from '../features/settings/SettingsPage'
 import { hasSportRank, useAthleteProfileStore } from '../stores/athlete-profile-store'
@@ -115,7 +116,7 @@ export function App() {
 
   if (activeRoute === 'settings') return <><OfflineStatus /><SettingsPage onBack={() => navigate('home')} /><PwaUpdateNotice /><Toaster richColors position="top-center" closeButton /></>
 
-  const page = activeRoute === 'gallery' ? <GalleryPage /> : activeRoute === 'ideas' ? <IdeasPage /> : <HomePage name={athleteProfile.name} />
+  const page = activeRoute === 'gallery' ? <GalleryPage /> : activeRoute === 'ideas' ? <IdeasPage /> : activeRoute === 'achievements' ? <AchievementsPage /> : <HomePage name={athleteProfile.name} />
 
   return <><OfflineStatus /><PwaInstallPrompt /><AppShell activeRoute={activeRoute} athleteProfile={athleteProfile} onNavigate={navigate}>{page}</AppShell><PwaUpdateNotice /><Toaster richColors position="top-center" closeButton /></>
 }
