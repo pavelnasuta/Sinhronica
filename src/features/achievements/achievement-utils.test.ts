@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
 import type { Achievement } from './achievement-types'
-import { getPreviousAchievement, getScoreChange, sortAchievements } from './achievement-utils'
+import { getPreviousAchievement, getScoreChange, normalizeAchievementDraft, sortAchievements } from './achievement-utils'
 
 function achievement(overrides: Partial<Achievement>): Achievement {
   return {
@@ -51,5 +51,12 @@ describe('achievement chronology', () => {
     const newer = achievement({ id: 'newer', performedOn: '2026-04-10', discipline: 'custom', customDiscipline: 'аква-шоу', score: 7.5 })
 
     expect(getScoreChange(newer, [older, newer])).toEqual({ direction: 'up', difference: 0.5 })
+  })
+
+  it('keeps score precision through thousandths', () => {
+    const normalized = normalizeAchievementDraft({ performedOn: '2026-04-10', eventName: 'Кубок Федерации', discipline: 'combo', score: 9.123, medal: 'gold' })
+
+    expect(normalized).toMatchObject({ score: 9.123 })
+    expect(getScoreChange(achievement({ id: 'newer', performedOn: '2026-04-10', score: 9.123 }), [achievement({ id: 'older', score: 8.001 }), achievement({ id: 'newer', performedOn: '2026-04-10', score: 9.123 })])).toEqual({ direction: 'up', difference: 1.122 })
   })
 })

@@ -37,7 +37,7 @@ export function normalizeAchievementDraft(draft: AchievementDraft): AchievementD
     eventName,
     discipline: draft.discipline,
     ...(draft.discipline === 'custom' ? { customDiscipline } : {}),
-    score: Math.round(score * 100) / 100,
+    score: Math.round(score * 1000) / 1000,
     medal: draft.medal,
   }
 }
@@ -62,6 +62,6 @@ export function getPreviousAchievement(current: Achievement, records: Achievemen
 export function getScoreChange(current: Achievement, records: Achievement[]): ScoreChange | null {
   const previous = getPreviousAchievement(current, records)
   if (!previous) return null
-  const difference = Math.round((current.score - previous.score) * 100) / 100
+  const difference = Math.round((current.score - previous.score) * 1000) / 1000
   return { direction: difference > 0 ? 'up' : difference < 0 ? 'down' : 'same', difference: Math.abs(difference) }
 }

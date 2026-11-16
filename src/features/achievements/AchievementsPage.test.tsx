@@ -22,16 +22,17 @@ it('shows Acqui and creates an achievement from the empty state', async () => {
   expect(screen.getByRole('presentation')).toHaveAttribute('src', expect.stringContaining('onboarding/progress.webp'))
 
   await user.click(screen.getByRole('button', { name: 'Добавить достижение' }))
+  expect(screen.getByLabelText('Балл')).toHaveValue('')
   await user.type(screen.getByLabelText('Соревнование или событие'), 'Кубок Федерации')
   await user.selectOptions(screen.getByLabelText('Дисциплина'), 'combo')
   await user.clear(screen.getByLabelText('Балл'))
-  await user.type(screen.getByLabelText('Балл'), '9.25')
+  await user.type(screen.getByLabelText('Балл'), '9,123')
   await user.selectOptions(screen.getByLabelText('Медаль'), 'gold')
   await user.click(screen.getByRole('button', { name: 'Сохранить достижение' }))
 
   expect(screen.getByRole('heading', { name: 'Твои достижения' })).toBeVisible()
   expect(screen.getByText('Кубок Федерации')).toBeVisible()
-  expect(screen.getAllByText('9,25').length).toBeGreaterThan(0)
+  expect(screen.getAllByText('9,123').length).toBeGreaterThan(0)
   expect(screen.getByText('1 место')).toBeVisible()
 })
 
@@ -47,6 +48,10 @@ it('sorts by performance date, compares nearest earlier record, edits and delete
   const cards = screen.getAllByTestId('achievement-card')
   expect(cards[0]).toHaveTextContent('Кубок Федерации')
   expect(cards[0]).toHaveTextContent('Выше на 1,25')
+  expect(screen.getByRole('button', { name: 'Изменить достижение Кубок Федерации' }).querySelector('svg')).toBeTruthy()
+  expect(screen.getByRole('button', { name: 'Удалить достижение Кубок Федерации' }).querySelector('svg')).toBeTruthy()
+  expect(screen.queryByText('Изменить')).not.toBeInTheDocument()
+  expect(screen.queryByText('Удалить')).not.toBeInTheDocument()
 
   await user.click(screen.getByRole('button', { name: 'Изменить достижение Кубок Федерации' }))
   await user.clear(screen.getByLabelText('Балл'))
