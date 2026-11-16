@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../co
 import { Onboarding } from '../features/onboarding/Onboarding'
 import { GalleryPage } from '../features/gallery/GalleryPage'
 import { IdeasPage } from '../features/ideas/IdeasPage'
+import { SettingsPage } from '../features/settings/SettingsPage'
 import { hasSportRank, useAthleteProfileStore } from '../stores/athlete-profile-store'
 import { usePreferencesStore } from '../stores/preferences-store'
 import { AppShell } from './layouts/AppShell'
@@ -14,6 +15,7 @@ import { appRoutes, type RouteName } from './routes'
 
 function routeFromHash(): RouteName {
   const route = window.location.hash.slice(1)
+  if (route === 'settings') return 'settings'
   return appRoutes.find((candidate) => candidate.name === route)?.name ?? 'home'
 }
 
@@ -110,6 +112,8 @@ export function App() {
 
   if (!athleteProfile) return <><OfflineStatus /><Onboarding /><PwaUpdateNotice /><Toaster richColors position="top-center" closeButton /></>
   if (!hasSportRank(athleteProfile)) return <><OfflineStatus /><Onboarding initialProfile={athleteProfile} /><PwaUpdateNotice /><Toaster richColors position="top-center" closeButton /></>
+
+  if (activeRoute === 'settings') return <><OfflineStatus /><SettingsPage onBack={() => navigate('home')} /><PwaUpdateNotice /><Toaster richColors position="top-center" closeButton /></>
 
   const page = activeRoute === 'gallery' ? <GalleryPage /> : activeRoute === 'ideas' ? <IdeasPage /> : <HomePage name={athleteProfile.name} />
 
