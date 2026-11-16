@@ -34,20 +34,28 @@ test('opens the figures catalog and score calculator from Useful without mobile 
   expect(layout.scrollWidth).toBe(layout.clientWidth)
 })
 
-test('shows the routines in-development state with Aqui on mobile', async ({ page }) => {
+test('creates a persistent routine structure without mobile overflow', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 })
   await page.goto('/starter-kit/')
   await page.getByRole('link', { name: 'Номера' }).click()
 
   await expect(page.getByRole('heading', { name: 'Номера' })).toBeVisible()
-  await expect(page.getByText('Раздел в разработке')).toBeVisible()
-  await expect(page.getByRole('img', { name: 'Акви тренируется перед новыми номерами' })).toHaveAttribute('src', /onboarding\/practice\.webp/)
+  await page.getByRole('button', { name: 'Создать номер' }).click()
+  await page.getByLabel('Название номера').fill('Лазурь')
+  await page.getByLabel('Участниц в номере').fill('8')
+  await page.getByRole('button', { name: 'Сохранить' }).click()
+  await expect(page.getByRole('heading', { name: 'Лазурь' })).toBeVisible()
+  await page.getByRole('button', { name: 'Блок' }).click()
+  await page.getByLabel('Название').fill('Гибрид 1')
+  await page.getByLabel('Начало, сек.').fill('30')
+  await page.getByLabel('Конец, сек.').fill('45')
+  await page.getByLabel('Ручная сложность').fill('3,2')
+  await page.getByRole('button', { name: 'Сохранить блок' }).click()
+  await expect(page.getByText('Гибрид 1')).toBeVisible()
+  await expect(page.getByText('Сложность: 3,2')).toBeVisible()
+  await page.reload()
+  await expect(page.getByRole('button', { name: /Лазурь/i })).toBeVisible()
 
-  const layout = await page.evaluate(() => ({
-    scrollWidth: document.documentElement.scrollWidth,
-    clientWidth: document.documentElement.clientWidth,
-    mascotFit: getComputedStyle(document.querySelector('img[src*="onboarding/practice.webp"]')!).objectFit,
-  }))
+  const layout = await page.evaluate(() => ({ scrollWidth: document.documentElement.scrollWidth, clientWidth: document.documentElement.clientWidth }))
   expect(layout.scrollWidth).toBe(layout.clientWidth)
-  expect(layout.mascotFit).toBe('contain')
 })

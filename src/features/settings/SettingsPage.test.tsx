@@ -5,6 +5,7 @@ import { beforeEach, expect, it, vi } from 'vitest'
 import { useAthleteProfileStore } from '../../stores/athlete-profile-store'
 import { ACHIEVEMENTS_STORAGE_KEY, useAchievementsStore } from '../../stores/achievements-store'
 import { FIGURE_PROGRESS_STORAGE_KEY, useFigureProgressStore } from '../../stores/figure-progress-store'
+import { ROUTINES_STORAGE_KEY, useRoutinesStore } from '../../stores/routines-store'
 import { SettingsPage } from './SettingsPage'
 
 beforeEach(() => {
@@ -12,6 +13,7 @@ beforeEach(() => {
   useAthleteProfileStore.setState({ profile: { name: 'Алина', birthDate: '2014-11-16', city: 'Казань', sportRank: 'дельфиник' } })
   useAchievementsStore.setState({ achievements: [], storageStatus: 'ready' })
   useFigureProgressStore.setState({ progress: [], storageStatus: 'ready' })
+  useRoutinesStore.setState({ routines: [], storageStatus: 'ready' })
 })
 
 it('updates athlete profile and links feedback to Pavel', async () => {
@@ -50,4 +52,14 @@ it('hydrates local figure study statuses before creating a local backup', () => 
   render(<SettingsPage onBack={vi.fn()} />)
 
   expect(useFigureProgressStore.getState().progress).toEqual([expect.objectContaining({ figureCode: '106', status: 'learning' })])
+})
+
+it('hydrates local routine cards before creating a local backup', () => {
+  localStorage.setItem(ROUTINES_STORAGE_KEY, JSON.stringify([{
+    id: 'azure', title: 'Лазурь', context: 'training', discipline: 'group', programType: 'free', ageGroup: 'Девушки 13–15 лет', activeAthleteCount: 8, reserveAthleteCount: 0, athleteNames: [], blocks: [], createdAt: '2026-11-16T00:00:00.000Z', updatedAt: '2026-11-16T00:00:00.000Z',
+  }]))
+
+  render(<SettingsPage onBack={vi.fn()} />)
+
+  expect(useRoutinesStore.getState().routines).toEqual([expect.objectContaining({ id: 'azure', title: 'Лазурь' })])
 })

@@ -1,14 +1,27 @@
 import { render, screen } from '@testing-library/react'
-import { expect, it } from 'vitest'
+import userEvent from '@testing-library/user-event'
+import { afterEach, expect, it } from 'vitest'
 
+import { useRoutinesStore } from '../../stores/routines-store'
 import { RoutinesPage } from './RoutinesPage'
 
-it('shows a calm in-development state for routines with Aqui', () => {
-  render(<RoutinesPage />)
+afterEach(() => { localStorage.clear(); useRoutinesStore.setState({ routines: [], storageStatus: 'ready' }) })
 
-  expect(screen.getByRole('heading', { name: 'Номера' })).toBeInTheDocument()
-  expect(screen.getByRole('img', { name: 'Акви тренируется перед новыми номерами' })).toHaveAttribute('src', expect.stringContaining('onboarding/practice.webp'))
-  expect(screen.getByText('Раздел в разработке')).toBeInTheDocument()
-  expect(screen.queryByRole('link')).not.toBeInTheDocument()
-  expect(screen.queryByRole('button')).not.toBeInTheDocument()
+it('creates, opens, edits and deletes a local routine card', async () => {
+  const user = userEvent.setup()
+  render(<RoutinesPage />)
+  await user.click(screen.getByRole('button', { name: 'Создать номер' }))
+  await user.type(screen.getByLabelText('Название номера'), 'Лазурь')
+  await user.clear(screen.getByLabelText('Участниц в номере'))
+  await user.type(screen.getByLabelText('Участниц в номере'), '8')
+  await user.click(screen.getByRole('button', { name: 'Сохранить' }))
+  expect(screen.getByRole('heading', { name: 'Лазурь' })).toBeVisible()
+  await user.click(screen.getByRole('button', { name: 'Редактировать номер' }))
+  await user.clear(screen.getByLabelText('Название номера'))
+  await user.type(screen.getByLabelText('Название номера'), 'Волна')
+  await user.click(screen.getByRole('button', { name: 'Сохранить' }))
+  expect(screen.getByRole('heading', { name: 'Волна' })).toBeVisible()
+  await user.click(screen.getByRole('button', { name: 'Удалить номер' }))
+  await user.click(screen.getByRole('button', { name: 'Удалить номер' }))
+  expect(screen.getByRole('button', { name: 'Создать номер' })).toBeVisible()
 })
