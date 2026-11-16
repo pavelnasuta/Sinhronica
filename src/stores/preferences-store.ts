@@ -7,9 +7,10 @@ export type ThemePreference = 'light' | 'dark' | 'system'
 type PreferencesState = {
   theme: ThemePreference
   setTheme: (theme: ThemePreference) => void
+  clear: () => void
 }
 
-const STORAGE_KEY = 'sinhronica:preferences:v1'
+export const PREFERENCES_STORAGE_KEY = 'sinhronica:preferences:v1'
 
 const unavailableStorage: SafeStorage = {
   getItem: () => null,
@@ -29,7 +30,7 @@ function getStorage(): SafeStorage {
 }
 
 function readTheme(storage: SafeStorage): ThemePreference {
-  const value = storage.getItem(STORAGE_KEY)
+  const value = storage.getItem(PREFERENCES_STORAGE_KEY)
   return value === 'light' || value === 'dark' || value === 'system' ? value : 'system'
 }
 
@@ -38,7 +39,11 @@ const storage = getStorage()
 export const usePreferencesStore = create<PreferencesState>((set) => ({
   theme: readTheme(storage),
   setTheme: (theme) => {
-    storage.setItem(STORAGE_KEY, theme)
+    storage.setItem(PREFERENCES_STORAGE_KEY, theme)
     set({ theme })
+  },
+  clear: () => {
+    storage.removeItem(PREFERENCES_STORAGE_KEY)
+    set({ theme: 'system' })
   },
 }))

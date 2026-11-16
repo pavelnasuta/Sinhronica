@@ -14,10 +14,11 @@ export type IdeasState = {
   remove: (id: string) => void
   replaceFromImport: (payload: ImportPayload) => void
   reset: () => void
+  clear: () => void
   hydrate: () => void
 }
 
-const STORAGE_KEY = 'sinhronica:ideas:v1'
+export const IDEAS_STORAGE_KEY = 'sinhronica:ideas:v1'
 
 const unavailableStorage: SafeStorage = {
   getItem: () => null,
@@ -53,7 +54,7 @@ function persistIdeas(
   set: (state: Partial<IdeasState>) => void,
   ideas: Idea[],
 ) {
-  const wasSaved = storage.setItem(STORAGE_KEY, serializeExportPayload(ideas))
+  const wasSaved = storage.setItem(IDEAS_STORAGE_KEY, serializeExportPayload(ideas))
 
   set({ ideas, storageStatus: wasSaved ? 'ready' : 'unsaved' })
 }
@@ -104,6 +105,11 @@ export const useIdeasStore = create<IdeasState>((set, get) => ({
     persistIdeas(set, [])
   },
 
+  clear: () => {
+    storage.removeItem(IDEAS_STORAGE_KEY)
+    set({ ideas: [], storageStatus: 'ready' })
+  },
+
   hydrate: () => {
     if (get().storageStatus === 'unsaved') {
       return
@@ -114,7 +120,7 @@ export const useIdeasStore = create<IdeasState>((set, get) => ({
       return
     }
 
-    const serialized = storage.getItem(STORAGE_KEY)
+    const serialized = storage.getItem(IDEAS_STORAGE_KEY)
 
     if (serialized === null) {
       set({ ideas: [], storageStatus: 'ready' })

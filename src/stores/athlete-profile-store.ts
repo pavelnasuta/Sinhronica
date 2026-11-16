@@ -37,6 +37,7 @@ type PersistedProfile = { version: 2; profile: AthleteProfile }
 type AthleteProfileState = {
   profile: StoredAthleteProfile | null
   save: (profile: AthleteProfile) => boolean
+  clear: () => void
 }
 
 type BrowserStorage = Pick<Storage, 'getItem' | 'setItem' | 'removeItem'>
@@ -141,5 +142,10 @@ export const useAthleteProfileStore = create<AthleteProfileState>((set) => ({
     storage.removeItem(LEGACY_STORAGE_KEY)
     set({ profile })
     return true
+  },
+  clear: () => {
+    storage.removeItem(ATHLETE_PROFILE_STORAGE_KEY)
+    storage.removeItem(LEGACY_STORAGE_KEY)
+    set({ profile: null })
   },
 }))

@@ -53,4 +53,15 @@ describe('athlete profile store', () => {
 
     expect(parseLegacyPersistedProfile(JSON.stringify({ version: 1, profile: legacyProfile }))).toEqual(legacyProfile)
   })
+
+  it('clears only the athlete profile key', () => {
+    useAthleteProfileStore.getState().save({ name: 'Алина', birthDate: '2014-11-16', city: 'Казань', sportRank: 'дельфиник' })
+    window.localStorage.setItem('other-product:key', 'keep')
+
+    useAthleteProfileStore.getState().clear()
+
+    expect(window.localStorage.getItem(STORAGE_KEY)).toBeNull()
+    expect(window.localStorage.getItem('other-product:key')).toBe('keep')
+    expect(useAthleteProfileStore.getState().profile).toBeNull()
+  })
 })
