@@ -4,12 +4,14 @@ import { beforeEach, expect, it, vi } from 'vitest'
 
 import { useAthleteProfileStore } from '../../stores/athlete-profile-store'
 import { ACHIEVEMENTS_STORAGE_KEY, useAchievementsStore } from '../../stores/achievements-store'
+import { FIGURE_PROGRESS_STORAGE_KEY, useFigureProgressStore } from '../../stores/figure-progress-store'
 import { SettingsPage } from './SettingsPage'
 
 beforeEach(() => {
   localStorage.clear()
   useAthleteProfileStore.setState({ profile: { name: 'Алина', birthDate: '2014-11-16', city: 'Казань', sportRank: 'дельфиник' } })
   useAchievementsStore.setState({ achievements: [], storageStatus: 'ready' })
+  useFigureProgressStore.setState({ progress: [], storageStatus: 'ready' })
 })
 
 it('updates athlete profile and links feedback to Pavel', async () => {
@@ -38,4 +40,14 @@ it('hydrates stored achievements before creating a local backup', () => {
   render(<SettingsPage onBack={vi.fn()} />)
 
   expect(useAchievementsStore.getState().achievements).toEqual([expect.objectContaining({ id: 'combo-april' })])
+})
+
+it('hydrates local figure study statuses before creating a local backup', () => {
+  localStorage.setItem(FIGURE_PROGRESS_STORAGE_KEY, JSON.stringify([{
+    figureCode: '106', status: 'learning', updatedAt: '2026-11-16T00:00:00.000Z',
+  }]))
+
+  render(<SettingsPage onBack={vi.fn()} />)
+
+  expect(useFigureProgressStore.getState().progress).toEqual([expect.objectContaining({ figureCode: '106', status: 'learning' })])
 })

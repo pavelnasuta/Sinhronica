@@ -10,6 +10,7 @@ import { downloadUserData, serializeUserData } from '../../lib/user-data'
 import { SPORT_RANKS, formatLocalDate, isValidBirthDate, useAthleteProfileStore } from '../../stores/athlete-profile-store'
 import { useIdeasStore } from '../../stores/ideas-store'
 import { useAchievementsStore } from '../../stores/achievements-store'
+import { useFigureProgressStore } from '../../stores/figure-progress-store'
 import { usePreferencesStore, type ThemePreference } from '../../stores/preferences-store'
 
 type SettingsPageProps = { onBack: () => void }
@@ -24,13 +25,16 @@ export function SettingsPage({ onBack }: SettingsPageProps) {
   const achievements = useAchievementsStore((state) => state.achievements)
   const clearAchievements = useAchievementsStore((state) => state.clear)
   const hydrateAchievements = useAchievementsStore((state) => state.hydrate)
+  const figureProgress = useFigureProgressStore((state) => state.progress)
+  const clearFigureProgress = useFigureProgressStore((state) => state.clear)
+  const hydrateFigureProgress = useFigureProgressStore((state) => state.hydrate)
   const theme = usePreferencesStore((state) => state.theme)
   const setTheme = usePreferencesStore((state) => state.setTheme)
   const clearPreferences = usePreferencesStore((state) => state.clear)
   const [draft, setDraft] = useState(() => profile && 'sportRank' in profile ? profile : null)
   const [message, setMessage] = useState('')
 
-  useEffect(() => { hydrateIdeas(); hydrateAchievements() }, [hydrateAchievements, hydrateIdeas])
+  useEffect(() => { hydrateIdeas(); hydrateAchievements(); hydrateFigureProgress() }, [hydrateAchievements, hydrateFigureProgress, hydrateIdeas])
 
   if (!draft || !profile || !('sportRank' in profile)) return null
 
@@ -46,7 +50,7 @@ export function SettingsPage({ onBack }: SettingsPageProps) {
     setMessage('Профиль сохранён.')
   }
   const exportData = () => {
-    downloadUserData(serializeUserData({ profile: draft, ideas, achievements, theme }))
+    downloadUserData(serializeUserData({ profile: draft, ideas, achievements, figureProgress, theme }))
     setMessage('Резервная копия скачана.')
   }
   const share = async () => {
@@ -63,7 +67,7 @@ export function SettingsPage({ onBack }: SettingsPageProps) {
     await navigator.clipboard?.writeText(data.url)
     setMessage('Ссылка скопирована.')
   }
-  const removeAll = () => { clearAchievements(); clearIdeas(); clearPreferences(); clearProfile(); onBack() }
+  const removeAll = () => { clearAchievements(); clearFigureProgress(); clearIdeas(); clearPreferences(); clearProfile(); onBack() }
 
   return <div className="sinhronica-settings-shell flex flex-col bg-background"><header className="sinhronica-header border-b bg-background/95 backdrop-blur"><div className="mx-auto flex min-h-16 max-w-xl items-center px-4 py-2 sm:px-6"><div className="min-w-0"><p className="truncate text-base font-extrabold tracking-[-0.02em]">{profile.name}</p><div className="mt-1"><SportRankBadge rank={profile.sportRank} /></div></div></div></header><main className="sinhronica-screen mx-auto grid w-full max-w-xl gap-5 px-4 py-6 pb-[calc(2rem+env(safe-area-inset-bottom))] sm:px-6 sm:py-8" data-testid="settings-screen-transition">
     <div className="flex items-center gap-3"><Button variant="ghost" size="icon" onClick={onBack} aria-label="Назад"><ArrowLeft aria-hidden="true" /></Button><div><p className="text-xs font-extrabold uppercase tracking-[.1em] text-[color:var(--eyebrow)]">Синхроника</p><h1 className="text-3xl font-extrabold tracking-[-.04em]">Настройки</h1></div></div>

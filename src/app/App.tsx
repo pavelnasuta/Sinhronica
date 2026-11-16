@@ -4,6 +4,8 @@ import { Toaster } from 'sonner'
 import { PwaInstallPrompt } from '../components/pwa-install-prompt'
 import { PwaUpdateNotice } from '../components/pwa-update-notice'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card'
+import { FiguresCalculatorPage } from '../features/figures/FiguresCalculatorPage'
+import { FiguresCatalogPage } from '../features/figures/FiguresCatalogPage'
 import { Onboarding } from '../features/onboarding/Onboarding'
 import { UsefulPage } from '../features/useful/UsefulPage'
 import { AchievementsPage } from '../features/achievements/AchievementsPage'
@@ -16,7 +18,7 @@ import { appRoutes, type RouteName } from './routes'
 
 function routeFromHash(): RouteName {
   const route = window.location.hash.slice(1)
-  if (route === 'settings') return 'settings'
+  if (route === 'settings' || route === 'figures-catalog' || route === 'figures-calculator') return route
   return appRoutes.find((candidate) => candidate.name === route)?.name ?? 'home'
 }
 
@@ -116,7 +118,8 @@ export function App() {
 
   if (activeRoute === 'settings') return <><OfflineStatus /><SettingsPage onBack={() => navigate('home')} /><PwaUpdateNotice /><Toaster richColors position="top-center" closeButton /></>
 
-  const page = activeRoute === 'useful' ? <UsefulPage /> : activeRoute === 'routines' ? <RoutinesPage /> : activeRoute === 'achievements' ? <AchievementsPage /> : <HomePage name={athleteProfile.name} />
+  const page = activeRoute === 'useful' ? <UsefulPage onNavigate={navigate} /> : activeRoute === 'figures-catalog' ? <FiguresCatalogPage onBack={() => navigate('useful')} /> : activeRoute === 'figures-calculator' ? <FiguresCalculatorPage onBack={() => navigate('useful')} /> : activeRoute === 'routines' ? <RoutinesPage /> : activeRoute === 'achievements' ? <AchievementsPage /> : <HomePage name={athleteProfile.name} />
+  const navigationRoute = activeRoute === 'figures-catalog' || activeRoute === 'figures-calculator' ? 'useful' : activeRoute
 
-  return <><OfflineStatus /><PwaInstallPrompt /><AppShell activeRoute={activeRoute} athleteProfile={athleteProfile} onNavigate={navigate}>{page}</AppShell><PwaUpdateNotice /><Toaster richColors position="top-center" closeButton /></>
+  return <><OfflineStatus /><PwaInstallPrompt /><AppShell activeRoute={navigationRoute} athleteProfile={athleteProfile} onNavigate={navigate}>{page}</AppShell><PwaUpdateNotice /><Toaster richColors position="top-center" closeButton /></>
 }

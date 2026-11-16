@@ -8,23 +8,29 @@ test.beforeEach(async ({ page }) => {
   }, { profile: athleteProfile })
 })
 
-test('shows useful modules as non-interactive in-development cards on mobile', async ({ page }) => {
+test('opens the figures catalog and score calculator from Useful without mobile overflow', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 })
   await page.goto('/starter-kit/')
   await page.getByRole('link', { name: 'Полезное' }).click()
 
   await expect(page.getByRole('heading', { name: 'Полезное' })).toBeVisible()
-  await expect(page.getByText('В разработке')).toHaveCount(3)
-  await expect(page.getByText('Калькулятор баллов')).toBeVisible()
-  await expect(page.getByRole('heading', { name: 'Правила' })).toBeVisible()
-  await expect(page.getByText('Скоро ещё больше полезного')).toBeVisible()
-  await expect(page.locator('main').getByRole('link')).toHaveCount(0)
-  await expect(page.locator('main').getByRole('button')).toHaveCount(0)
+  await expect(page.getByRole('button', { name: /Калькулятор баллов/i })).toBeVisible()
+  await expect(page.getByRole('button', { name: /Каталог фигур/i })).toBeVisible()
+  await expect(page.getByText('В разработке')).toHaveCount(1)
 
-  const layout = await page.evaluate(() => ({
-    scrollWidth: document.documentElement.scrollWidth,
-    clientWidth: document.documentElement.clientWidth,
-  }))
+  await page.getByRole('button', { name: /Каталог фигур/i }).click()
+  await expect(page.getByRole('heading', { name: 'Каталог фигур' })).toBeVisible()
+  await page.getByRole('button', { name: /106.*Прямая балетная нога/i }).click()
+  await page.getByRole('button', { name: 'Освоено' }).click()
+  await expect(page.getByText('Освоено').first()).toBeVisible()
+
+  await page.getByRole('button', { name: 'К полезному' }).click()
+  await page.getByRole('button', { name: /Калькулятор баллов/i }).click()
+  await expect(page.getByRole('heading', { name: 'Калькулятор баллов' })).toBeVisible()
+  await page.getByLabel('Фигура 1, судья 1').fill('7,0')
+  await expect(page.getByText('Можно заменить только одну отсутствующую оценку судьи.')).toBeVisible()
+
+  const layout = await page.evaluate(() => ({ scrollWidth: document.documentElement.scrollWidth, clientWidth: document.documentElement.clientWidth }))
   expect(layout.scrollWidth).toBe(layout.clientWidth)
 })
 

@@ -2,18 +2,20 @@ import type { AthleteProfile } from '../stores/athlete-profile-store'
 import type { ThemePreference } from '../stores/preferences-store'
 import type { Idea } from '../types/idea'
 import type { Achievement } from '../features/achievements/achievement-types'
+import type { FigureProgress } from '../stores/figure-progress-store'
 
 export type UserDataExport = {
-  version: 2
+  version: 3
   exportedAt: string
   profile: AthleteProfile
   ideas: Idea[]
   achievements: Achievement[]
+  figureProgress: FigureProgress[]
   preferences: { theme: ThemePreference }
 }
 
-export function serializeUserData({ profile, ideas, achievements, theme }: Omit<UserDataExport, 'version' | 'exportedAt' | 'preferences'> & { theme: ThemePreference }): string {
-  return JSON.stringify({ version: 2, exportedAt: new Date().toISOString(), profile, ideas, achievements, preferences: { theme } }, null, 2)
+export function serializeUserData({ profile, ideas, achievements, figureProgress, theme }: Omit<UserDataExport, 'version' | 'exportedAt' | 'preferences'> & { theme: ThemePreference }): string {
+  return JSON.stringify({ version: 3, exportedAt: new Date().toISOString(), profile, ideas, achievements, figureProgress, preferences: { theme } }, null, 2)
 }
 
 export function downloadUserData(payload: string): void {

@@ -1,5 +1,5 @@
-export type RouteName = 'home' | 'useful' | 'routines' | 'achievements' | 'settings'
-export type PrimaryRouteName = Exclude<RouteName, 'settings'>
+export type RouteName = 'home' | 'useful' | 'routines' | 'achievements' | 'settings' | 'figures-catalog' | 'figures-calculator'
+export type PrimaryRouteName = 'home' | 'useful' | 'routines' | 'achievements'
 
 export type AppRoute = {
   name: PrimaryRouteName
