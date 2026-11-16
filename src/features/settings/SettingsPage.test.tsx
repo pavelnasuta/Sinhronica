@@ -19,4 +19,5 @@ it('updates athlete profile and links feedback to Pavel', async () => {
   await user.click(screen.getByRole('button', { name: 'Сохранить профиль' }))
   expect(useAthleteProfileStore.getState().profile).toMatchObject({ name: 'Маша', sportRank: 'КМС' })
   expect(screen.getByRole('link', { name: 'Предложить доработку' })).toHaveAttribute('href', 'https://t.me/pavelnasuta')
+  expect(screen.getByRole('presentation')).toHaveClass('object-contain')
 })
