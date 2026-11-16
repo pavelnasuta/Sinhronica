@@ -5,7 +5,7 @@ import { AppShell } from './AppShell'
 
 it('renders a personal header and labelled mobile bottom navigation', () => {
   render(
-    <AppShell activeRoute="ideas" athleteProfile={{ name: 'Алина', birthDate: '2014-11-16', city: 'Казань', sportRank: 'дельфиник' }} onNavigate={vi.fn()}>
+    <AppShell activeRoute="useful" athleteProfile={{ name: 'Алина', birthDate: '2014-11-16', city: 'Казань', sportRank: 'дельфиник' }} onNavigate={vi.fn()}>
       <p>Содержимое</p>
     </AppShell>,
   )
@@ -17,8 +17,8 @@ it('renders a personal header and labelled mobile bottom navigation', () => {
   expect(screen.getByRole('link', { name: 'Настройки' })).toHaveAttribute('href', '#settings')
   expect(screen.queryByRole('link', { name: 'Синхроника, перейти на главную' })).not.toBeInTheDocument()
   expect(navigation).toHaveTextContent('Главная')
-  expect(navigation).toHaveTextContent('Идеи')
-  expect(navigation).toHaveTextContent('Галерея')
+  expect(navigation).toHaveTextContent('Полезное')
+  expect(navigation).toHaveTextContent('Номера')
   expect(navigation).toHaveTextContent('Достижения')
-  expect(screen.getAllByRole('link', { name: 'Идеи' }).some((link) => link.getAttribute('aria-current') === 'page')).toBe(true)
+  expect(screen.getAllByRole('link', { name: 'Полезное' }).some((link) => link.getAttribute('aria-current') === 'page')).toBe(true)
 })

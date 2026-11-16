@@ -1,4 +1,4 @@
-import { House, Lightbulb, PanelsTopLeft, Settings, Trophy } from 'lucide-react'
+import { House, Music2, Settings, Sparkles, Trophy } from 'lucide-react'
 import { type ReactNode } from 'react'
 
 import type { AthleteProfile } from '../../stores/athlete-profile-store'
@@ -7,8 +7,8 @@ import { appRoutes, type RouteName } from '../routes'
 
 const routeIcons = {
   home: House,
-  ideas: Lightbulb,
-  gallery: PanelsTopLeft,
+  useful: Sparkles,
+  routines: Music2,
   achievements: Trophy,
 }
 

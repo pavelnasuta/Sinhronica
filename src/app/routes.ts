@@ -1,4 +1,4 @@
-export type RouteName = 'home' | 'ideas' | 'gallery' | 'achievements' | 'settings'
+export type RouteName = 'home' | 'useful' | 'routines' | 'achievements' | 'settings'
 export type PrimaryRouteName = Exclude<RouteName, 'settings'>
 
 export type AppRoute = {
@@ -8,7 +8,7 @@ export type AppRoute = {
 
 export const appRoutes: AppRoute[] = [
   { name: 'home', label: 'Главная' },
-  { name: 'ideas', label: 'Идеи' },
-  { name: 'gallery', label: 'Галерея' },
+  { name: 'useful', label: 'Полезное' },
+  { name: 'routines', label: 'Номера' },
   { name: 'achievements', label: 'Достижения' },
 ]
