@@ -28,7 +28,7 @@ describe('PwaUpdateNotice', () => {
   it('stays hidden until a new version is ready', () => {
     render(<PwaUpdateNotice />)
 
-    expect(screen.queryByRole('status', { name: 'Доступно обновление приложения' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('dialog', { name: 'Доступно обновление приложения' })).not.toBeInTheDocument()
   })
 
   it('lets the user reload into a ready update', async () => {
@@ -36,7 +36,11 @@ describe('PwaUpdateNotice', () => {
     const user = userEvent.setup()
     render(<PwaUpdateNotice />)
 
-    expect(screen.getByRole('status', { name: 'Доступно обновление приложения' })).toHaveTextContent('Доступна новая версия')
+    const dialog = screen.getByRole('dialog', { name: 'Есть кое-что новое' })
+    expect(dialog).toHaveClass('fixed', 'inset-0')
+    expect(dialog).toHaveAttribute('aria-modal', 'true')
+    expect(dialog).toHaveTextContent('Есть кое-что новое')
+    expect(screen.getByRole('img', { name: 'Акви задумалась об обновлении' })).toHaveAttribute('src', expect.stringContaining('aqui-thinking.png'))
     await user.click(screen.getByRole('button', { name: 'Обновить' }))
 
     expect(updateServiceWorker).toHaveBeenCalledOnce()
