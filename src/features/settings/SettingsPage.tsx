@@ -1,5 +1,5 @@
 import { ArrowLeft, Download, Send, Share2, Trash2 } from 'lucide-react'
-import { type FormEvent, useState } from 'react'
+import { type FormEvent, useEffect, useState } from 'react'
 
 import { Button } from '../../components/ui/button'
 import { Input } from '../../components/ui/input'
@@ -21,11 +21,14 @@ export function SettingsPage({ onBack }: SettingsPageProps) {
   const clearIdeas = useIdeasStore((state) => state.clear)
   const achievements = useAchievementsStore((state) => state.achievements)
   const clearAchievements = useAchievementsStore((state) => state.clear)
+  const hydrateAchievements = useAchievementsStore((state) => state.hydrate)
   const theme = usePreferencesStore((state) => state.theme)
   const setTheme = usePreferencesStore((state) => state.setTheme)
   const clearPreferences = usePreferencesStore((state) => state.clear)
   const [draft, setDraft] = useState(() => profile && 'sportRank' in profile ? profile : null)
   const [message, setMessage] = useState('')
+
+  useEffect(() => { hydrateAchievements() }, [hydrateAchievements])
 
   if (!draft) return null
 

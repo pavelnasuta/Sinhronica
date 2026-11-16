@@ -59,3 +59,11 @@ it('sorts by performance date, compares nearest earlier record, edits and delete
   expect(screen.queryByText('Весенний старт')).not.toBeInTheDocument()
   expect(screen.getByText('Кубок Федерации')).toBeVisible()
 })
+
+it('explains when saved achievement data had to be recovered', () => {
+  localStorage.setItem('sinhronica:achievements:v1', '{invalid json')
+
+  render(<AchievementsPage />)
+
+  expect(screen.getByRole('status', { name: 'Состояние хранения' })).toHaveTextContent('Повреждённые локальные данные были пропущены.')
+})
