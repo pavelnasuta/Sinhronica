@@ -4,13 +4,14 @@ const athleteProfile = {
   name: 'Алина',
   birthDate: '2014-11-16',
   city: 'Казань',
+  sportRank: 'дельфиник',
 }
 
-const athleteProfileStorageKey = 'sinhronica:athlete-profile:v1'
+const athleteProfileStorageKey = 'sinhronica:athlete-profile:v2'
 
 async function seedAthleteProfile(page: import('@playwright/test').Page) {
   await page.addInitScript(({ key, profile }) => {
-    window.localStorage.setItem(key, JSON.stringify({ version: 1, profile }))
+    window.localStorage.setItem(key, JSON.stringify({ version: 2, profile }))
   }, { key: athleteProfileStorageKey, profile: athleteProfile })
 }
 
@@ -71,7 +72,7 @@ test('shows iPad installation guidance for a desktop-style Safari user agent', a
     viewport: { width: 390, height: 844 },
   })
   await context.addInitScript(({ key, profile }) => {
-    window.localStorage.setItem(key, JSON.stringify({ version: 1, profile }))
+    window.localStorage.setItem(key, JSON.stringify({ version: 2, profile }))
   }, { key: athleteProfileStorageKey, profile: athleteProfile })
   await context.addInitScript(() => {
     Object.defineProperty(navigator, 'platform', { configurable: true, value: 'MacIntel' })

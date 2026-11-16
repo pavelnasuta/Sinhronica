@@ -14,12 +14,13 @@ test('collects the athlete profile locally before opening the app', async ({ bro
   await page.getByLabel('Как тебя зовут?').fill('Алина')
   await page.getByLabel('Дата рождения').fill('2014-11-16')
   await page.getByLabel('Город').fill('Казань')
+  await page.getByLabel('Спортивный разряд').selectOption('дельфиник')
   await page.getByRole('button', { name: 'Открыть Синхронику' }).click()
 
   await expect(page.getByRole('heading', { name: 'Привет, Алина' })).toBeVisible()
-  await expect.poll(async () => page.evaluate(() => window.localStorage.getItem('sinhronica:athlete-profile:v1'))).toBe(JSON.stringify({
-    version: 1,
-    profile: { name: 'Алина', birthDate: '2014-11-16', city: 'Казань' },
+  await expect.poll(async () => page.evaluate(() => window.localStorage.getItem('sinhronica:athlete-profile:v2'))).toBe(JSON.stringify({
+    version: 2,
+    profile: { name: 'Алина', birthDate: '2014-11-16', city: 'Казань', sportRank: 'дельфиник' },
   }))
 
   await context.close()

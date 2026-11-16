@@ -1,8 +1,15 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 
-import { calculateAge, formatLocalDate, parsePersistedProfile, useAthleteProfileStore } from './athlete-profile-store'
+import {
+  ATHLETE_PROFILE_STORAGE_KEY,
+  calculateAge,
+  formatLocalDate,
+  parseLegacyPersistedProfile,
+  parsePersistedProfile,
+  useAthleteProfileStore,
+} from './athlete-profile-store'
 
-const STORAGE_KEY = 'sinhronica:athlete-profile:v1'
+const STORAGE_KEY = ATHLETE_PROFILE_STORAGE_KEY
 
 describe('athlete profile store', () => {
   beforeEach(() => {
@@ -31,12 +38,19 @@ describe('athlete profile store', () => {
     expect(formatLocalDate(localDate)).toBe('2026-11-15')
   })
 
-  it('stores the athlete profile only under the Sinhronica local key', () => {
-    const profile = { name: 'Алина', birthDate: '2014-11-16', city: 'Казань' }
+  it('stores the athlete profile with the selected sport rank under a versioned Sinhronica key', () => {
+    const profile = { name: 'Алина', birthDate: '2014-11-16', city: 'Казань', sportRank: 'дельфиник' as const }
 
     expect(useAthleteProfileStore.getState().save(profile)).toBe(true)
     expect(useAthleteProfileStore.getState().profile).toEqual(profile)
-    expect(JSON.parse(window.localStorage.getItem(STORAGE_KEY) ?? 'null')).toEqual({ version: 1, profile })
+    expect(JSON.parse(window.localStorage.getItem(STORAGE_KEY) ?? 'null')).toEqual({ version: 2, profile })
+    expect(window.localStorage.getItem('sinhronica:athlete-profile:v1')).toBeNull()
     expect(window.localStorage.getItem('mvp-pwa-starter:preferences:v1')).toBeNull()
+  })
+
+  it('keeps a valid legacy profile readable so it can request the missing sport rank', () => {
+    const legacyProfile = { name: 'Алина', birthDate: '2014-11-16', city: 'Казань' }
+
+    expect(parseLegacyPersistedProfile(JSON.stringify({ version: 1, profile: legacyProfile }))).toEqual(legacyProfile)
   })
 })

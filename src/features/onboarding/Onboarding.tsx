@@ -4,7 +4,13 @@ import { type FormEvent, useEffect, useRef, useState } from 'react'
 import { Button } from '../../components/ui/button'
 import { Input } from '../../components/ui/input'
 import { Label } from '../../components/ui/label'
-import { formatLocalDate, isValidBirthDate, useAthleteProfileStore } from '../../stores/athlete-profile-store'
+import {
+  SPORT_RANKS,
+  formatLocalDate,
+  isValidBirthDate,
+  type LegacyAthleteProfile,
+  useAthleteProfileStore,
+} from '../../stores/athlete-profile-store'
 
 const slides = [
   {
@@ -34,15 +40,19 @@ const slides = [
   },
 ]
 
-type FieldName = 'name' | 'birthDate' | 'city'
+type FieldName = 'name' | 'birthDate' | 'city' | 'sportRank'
 
 type ProfileDraft = Record<FieldName, string>
 
-const initialProfile: ProfileDraft = { name: '', birthDate: '', city: '' }
+type OnboardingProps = {
+  initialProfile?: LegacyAthleteProfile
+}
 
-export function Onboarding() {
-  const [step, setStep] = useState(0)
-  const [draft, setDraft] = useState<ProfileDraft>(initialProfile)
+const emptyProfile: ProfileDraft = { name: '', birthDate: '', city: '', sportRank: '' }
+
+export function Onboarding({ initialProfile }: OnboardingProps) {
+  const [step, setStep] = useState(() => initialProfile ? slides.length : 0)
+  const [draft, setDraft] = useState<ProfileDraft>(() => ({ ...emptyProfile, ...initialProfile }))
   const [errors, setErrors] = useState<Partial<Record<FieldName, string>>>({})
   const [storageError, setStorageError] = useState('')
   const headingRef = useRef<HTMLHeadingElement>(null)
@@ -64,17 +74,19 @@ export function Onboarding() {
     event.preventDefault()
     const nextErrors: Partial<Record<FieldName, string>> = {}
     const profile = { name: draft.name.trim(), birthDate: draft.birthDate, city: draft.city.trim() }
+    const sportRank = SPORT_RANKS.find((rank) => rank === draft.sportRank)
 
     if (profile.name.length < 2) nextErrors.name = 'Введи имя минимум из двух букв.'
     if (!isValidBirthDate(profile.birthDate)) nextErrors.birthDate = 'Введи дату рождения, которая уже наступила.'
     if (profile.city.length < 2) nextErrors.city = 'Введи название города.'
+    if (!sportRank) nextErrors.sportRank = 'Выбери свой спортивный разряд.'
 
     if (Object.keys(nextErrors).length > 0) {
       setErrors(nextErrors)
       return
     }
 
-    if (!saveProfile(profile)) {
+    if (!sportRank || !saveProfile({ ...profile, sportRank })) {
       setStorageError('Не удалось сохранить профиль на этом устройстве. Проверь настройки браузера и повтори попытку.')
     }
   }
@@ -93,7 +105,7 @@ export function Onboarding() {
           <form className="my-auto rounded-[var(--radius-xl)] border border-[color:var(--stroke)] bg-card p-5 shadow-[var(--shadow-card)] sm:p-6" onSubmit={submitProfile} noValidate>
             <p className="mb-2 text-xs font-extrabold uppercase tracking-[0.09em] text-[color:var(--eyebrow)]">Мой профиль</p>
             <h1 id="onboarding-title" ref={headingRef} tabIndex={-1} className="text-3xl font-extrabold tracking-[-0.04em] outline-none">Расскажи немного о себе</h1>
-            <p className="mt-3 text-sm leading-6 text-muted-foreground">Имя, дата рождения и город останутся только на этом устройстве. Мы не отправляем их на сервер.</p>
+            <p className="mt-3 text-sm leading-6 text-muted-foreground">Имя, дата рождения, город и спортивный разряд останутся только на этом устройстве. Мы не отправляем их на сервер.</p>
             <div className="mt-6 grid gap-4">
               <div className="grid gap-2">
                 <Label htmlFor="athlete-name">Как тебя зовут?</Label>
@@ -109,6 +121,14 @@ export function Onboarding() {
                 <Label htmlFor="athlete-city">Город</Label>
                 <Input id="athlete-city" autoComplete="address-level2" value={draft.city} onChange={(event) => updateField('city', event.target.value)} aria-invalid={Boolean(errors.city)} aria-describedby={errors.city ? 'athlete-city-error' : undefined} />
                 {errors.city ? <p id="athlete-city-error" className="text-sm text-destructive" role="alert">{errors.city}</p> : null}
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="athlete-sport-rank">Спортивный разряд</Label>
+                <select id="athlete-sport-rank" value={draft.sportRank} onChange={(event) => updateField('sportRank', event.target.value)} aria-invalid={Boolean(errors.sportRank)} aria-describedby={errors.sportRank ? 'athlete-sport-rank-error' : undefined} className="flex h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-base shadow-sm outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm">
+                  <option value="" disabled>Выбери разряд</option>
+                  {SPORT_RANKS.map((sportRank) => <option key={sportRank} value={sportRank}>{sportRank}</option>)}
+                </select>
+                {errors.sportRank ? <p id="athlete-sport-rank-error" className="text-sm text-destructive" role="alert">{errors.sportRank}</p> : null}
               </div>
             </div>
             {storageError ? <p className="mt-4 text-sm text-destructive" role="alert">{storageError}</p> : null}

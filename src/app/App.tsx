@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../co
 import { Onboarding } from '../features/onboarding/Onboarding'
 import { GalleryPage } from '../features/gallery/GalleryPage'
 import { IdeasPage } from '../features/ideas/IdeasPage'
-import { useAthleteProfileStore } from '../stores/athlete-profile-store'
+import { hasSportRank, useAthleteProfileStore } from '../stores/athlete-profile-store'
 import { usePreferencesStore } from '../stores/preferences-store'
 import { AppShell } from './layouts/AppShell'
 import { appRoutes, type RouteName } from './routes'
@@ -109,6 +109,7 @@ export function App() {
   }
 
   if (!athleteProfile) return <><OfflineStatus /><Onboarding /><PwaUpdateNotice /><Toaster richColors position="top-center" closeButton /></>
+  if (!hasSportRank(athleteProfile)) return <><OfflineStatus /><Onboarding initialProfile={athleteProfile} /><PwaUpdateNotice /><Toaster richColors position="top-center" closeButton /></>
 
   const page = activeRoute === 'gallery' ? <GalleryPage /> : activeRoute === 'ideas' ? <IdeasPage /> : <HomePage name={athleteProfile.name} />
 

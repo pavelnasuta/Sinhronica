@@ -3,20 +3,39 @@ import { create } from 'zustand'
 
 import { createSafeStorage, type SafeStorage } from '../lib/browser-storage'
 
-const STORAGE_KEY = 'sinhronica:athlete-profile:v1'
+export const ATHLETE_PROFILE_STORAGE_KEY = 'sinhronica:athlete-profile:v2'
+const LEGACY_STORAGE_KEY = 'sinhronica:athlete-profile:v1'
+
+export const SPORT_RANKS = [
+  'дельфиник',
+  'III юношеский разряд',
+  'II юношеский разряд',
+  'I юношеский разряд',
+  'III спортивный разряд',
+  'II спортивный разряд',
+  'I спортивный разряд',
+  'КМС',
+  'МС',
+  'МСМК',
+] as const
 
 export const athleteProfileSchema = z.object({
   name: z.string().trim().min(2).max(50),
   birthDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   city: z.string().trim().min(2).max(80),
+  sportRank: z.enum(SPORT_RANKS),
 })
 
-export type AthleteProfile = z.infer<typeof athleteProfileSchema>
+const legacyAthleteProfileSchema = athleteProfileSchema.omit({ sportRank: true })
 
-type PersistedProfile = { version: 1; profile: AthleteProfile }
+export type AthleteProfile = z.infer<typeof athleteProfileSchema>
+export type LegacyAthleteProfile = z.infer<typeof legacyAthleteProfileSchema>
+export type StoredAthleteProfile = AthleteProfile | LegacyAthleteProfile
+
+type PersistedProfile = { version: 2; profile: AthleteProfile }
 
 type AthleteProfileState = {
-  profile: AthleteProfile | null
+  profile: StoredAthleteProfile | null
   save: (profile: AthleteProfile) => boolean
 }
 
@@ -39,8 +58,9 @@ function getStorage(): SafeStorage {
   }
 }
 
-function readProfile(storage: SafeStorage): AthleteProfile | null {
-  return parsePersistedProfile(storage.getItem(STORAGE_KEY))
+function readProfile(storage: SafeStorage): StoredAthleteProfile | null {
+  return parsePersistedProfile(storage.getItem(ATHLETE_PROFILE_STORAGE_KEY))
+    ?? parseLegacyPersistedProfile(storage.getItem(LEGACY_STORAGE_KEY))
 }
 
 function parseBirthDate(value: string): { year: number; month: number; day: number } | null {
@@ -75,11 +95,26 @@ export function parsePersistedProfile(raw: string | null, now = new Date()): Ath
   if (!raw) return null
 
   try {
-    const saved = z.object({ version: z.literal(1), profile: athleteProfileSchema }).safeParse(JSON.parse(raw))
+    const saved = z.object({ version: z.literal(2), profile: athleteProfileSchema }).safeParse(JSON.parse(raw))
     return saved.success && isValidBirthDate(saved.data.profile.birthDate, now) ? saved.data.profile : null
   } catch {
     return null
   }
+}
+
+export function parseLegacyPersistedProfile(raw: string | null, now = new Date()): LegacyAthleteProfile | null {
+  if (!raw) return null
+
+  try {
+    const saved = z.object({ version: z.literal(1), profile: legacyAthleteProfileSchema }).safeParse(JSON.parse(raw))
+    return saved.success && isValidBirthDate(saved.data.profile.birthDate, now) ? saved.data.profile : null
+  } catch {
+    return null
+  }
+}
+
+export function hasSportRank(profile: StoredAthleteProfile): profile is AthleteProfile {
+  return 'sportRank' in profile
 }
 
 export function calculateAge(value: string, now = new Date()): number | null {
@@ -100,9 +135,10 @@ export const useAthleteProfileStore = create<AthleteProfileState>((set) => ({
     if (!parsed.success || !isValidBirthDate(parsed.data.birthDate)) return false
 
     const profile = parsed.data
-    const persisted: PersistedProfile = { version: 1, profile }
-    if (!storage.setItem(STORAGE_KEY, JSON.stringify(persisted))) return false
+    const persisted: PersistedProfile = { version: 2, profile }
+    if (!storage.setItem(ATHLETE_PROFILE_STORAGE_KEY, JSON.stringify(persisted))) return false
 
+    storage.removeItem(LEGACY_STORAGE_KEY)
     set({ profile })
     return true
   },
