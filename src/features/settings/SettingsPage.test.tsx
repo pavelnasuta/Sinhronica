@@ -6,6 +6,7 @@ import { useAthleteProfileStore } from '../../stores/athlete-profile-store'
 import { ACHIEVEMENTS_STORAGE_KEY, useAchievementsStore } from '../../stores/achievements-store'
 import { FIGURE_PROGRESS_STORAGE_KEY, useFigureProgressStore } from '../../stores/figure-progress-store'
 import { ROUTINES_STORAGE_KEY, useRoutinesStore } from '../../stores/routines-store'
+import { TRAINING_DIARY_STORAGE_KEY, useTrainingDiaryStore } from '../../stores/training-diary-store'
 import { SettingsPage } from './SettingsPage'
 
 beforeEach(() => {
@@ -14,6 +15,7 @@ beforeEach(() => {
   useAchievementsStore.setState({ achievements: [], storageStatus: 'ready' })
   useFigureProgressStore.setState({ progress: [], storageStatus: 'ready' })
   useRoutinesStore.setState({ routines: [], storageStatus: 'ready' })
+  useTrainingDiaryStore.setState({ entries: [], storageStatus: 'ready' })
 })
 
 it('updates athlete profile and links feedback to Pavel', async () => {
@@ -52,6 +54,16 @@ it('hydrates local figure study statuses before creating a local backup', () => 
   render(<SettingsPage onBack={vi.fn()} />)
 
   expect(useFigureProgressStore.getState().progress).toEqual([expect.objectContaining({ figureCode: '106', status: 'learning' })])
+})
+
+it('hydrates local diary entries before creating a local backup', () => {
+  localStorage.setItem(TRAINING_DIARY_STORAGE_KEY, JSON.stringify([{
+    id: 'practice', performedOn: '2026-11-16', types: ['water'], mood: 'good', createdAt: '2026-11-16T00:00:00.000Z', updatedAt: '2026-11-16T00:00:00.000Z',
+  }]))
+
+  render(<SettingsPage onBack={vi.fn()} />)
+
+  expect(useTrainingDiaryStore.getState().entries).toEqual([expect.objectContaining({ id: 'practice', mood: 'good' })])
 })
 
 it('hydrates local routine cards before creating a local backup', () => {

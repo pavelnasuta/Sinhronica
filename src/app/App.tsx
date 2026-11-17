@@ -7,6 +7,7 @@ import { AchievementsPage } from '../features/achievements/AchievementsPage'
 import { FiguresCalculatorPage } from '../features/figures/FiguresCalculatorPage'
 import { FiguresCatalogPage } from '../features/figures/FiguresCatalogPage'
 import { HomePage } from '../features/home/HomePage'
+import { DiaryPage } from '../features/training-diary/DiaryPage'
 import { Onboarding } from '../features/onboarding/Onboarding'
 import { RoutinesPage } from '../features/routines/RoutinesPage'
 import { SettingsPage } from '../features/settings/SettingsPage'
@@ -16,12 +17,13 @@ import { useAchievementsStore } from '../stores/achievements-store'
 import { useFigureProgressStore } from '../stores/figure-progress-store'
 import { usePreferencesStore } from '../stores/preferences-store'
 import { useRoutinesStore } from '../stores/routines-store'
+import { useTrainingDiaryStore } from '../stores/training-diary-store'
 import { AppShell } from './layouts/AppShell'
 import { appRoutes, type RouteName } from './routes'
 
 function routeFromHash(): RouteName {
   const route = window.location.hash.slice(1)
-  if (route === 'settings' || route === 'figures-catalog' || route === 'figures-calculator') return route
+  if (route === 'settings' || route === 'figures-catalog' || route === 'figures-calculator' || route === 'diary') return route
   return appRoutes.find((candidate) => candidate.name === route)?.name ?? 'home'
 }
 
@@ -73,6 +75,8 @@ export function App() {
   const hydrateFigureProgress = useFigureProgressStore((state) => state.hydrate)
   const achievements = useAchievementsStore((state) => state.achievements)
   const hydrateAchievements = useAchievementsStore((state) => state.hydrate)
+  const entries = useTrainingDiaryStore((state) => state.entries)
+  const hydrateEntries = useTrainingDiaryStore((state) => state.hydrate)
   useAppliedTheme()
 
   useEffect(() => {
@@ -85,7 +89,8 @@ export function App() {
     hydrateRoutines()
     hydrateFigureProgress()
     hydrateAchievements()
-  }, [hydrateAchievements, hydrateFigureProgress, hydrateRoutines])
+    hydrateEntries()
+  }, [hydrateAchievements, hydrateEntries, hydrateFigureProgress, hydrateRoutines])
 
   const navigate = (route: RouteName) => {
     window.location.hash = route
@@ -107,8 +112,10 @@ export function App() {
           ? <RoutinesPage />
           : activeRoute === 'achievements'
             ? <AchievementsPage />
-            : <HomePage profile={athleteProfile} routines={routines} figureProgress={figureProgress} achievements={achievements} onNavigate={navigate} />
-  const navigationRoute = activeRoute === 'figures-catalog' || activeRoute === 'figures-calculator' ? 'useful' : activeRoute
+            : activeRoute === 'diary'
+              ? <DiaryPage onBack={() => navigate('home')} />
+              : <HomePage profile={athleteProfile} routines={routines} figureProgress={figureProgress} achievements={achievements} entries={entries} onNavigate={navigate} />
+  const navigationRoute = activeRoute === 'figures-catalog' || activeRoute === 'figures-calculator' ? 'useful' : activeRoute === 'diary' ? 'home' : activeRoute
 
   return <><OfflineStatus /><PwaInstallPrompt /><AppShell activeRoute={navigationRoute} onNavigate={navigate}>{page}</AppShell><PwaUpdateNotice /><Toaster richColors position="top-center" closeButton /></>
 }

@@ -11,7 +11,7 @@ const achievement = { id: 'achievement-1', performedOn: '2026-11-10', eventName:
 it('shows a personal home header, current focus and local progress', async () => {
   const user = userEvent.setup()
   const onNavigate = vi.fn()
-  render(<HomePage profile={profile} routines={[routine]} figureProgress={[{ figureCode: '101', status: 'mastered', updatedAt: '2026-11-12T12:00:00.000Z' }]} achievements={[achievement]} onNavigate={onNavigate} />)
+  render(<HomePage profile={profile} routines={[routine]} figureProgress={[{ figureCode: '101', status: 'mastered', updatedAt: '2026-11-12T12:00:00.000Z' }]} achievements={[achievement]} entries={[]} onNavigate={onNavigate} />)
 
   expect(screen.getByRole('heading', { name: 'Привет, Алина' })).toBeVisible()
   expect(screen.getByText('дельфиник')).toBeVisible()
@@ -30,16 +30,18 @@ it('shows a personal home header, current focus and local progress', async () =>
   expect(screen.queryByText('На сегодня')).not.toBeInTheDocument()
   expect(screen.queryByText('Моя траектория')).not.toBeInTheDocument()
   expect(screen.queryByText('Под рукой')).not.toBeInTheDocument()
-  expect(screen.queryByRole('button', { name: /Дневник тренировок/i })).not.toBeInTheDocument()
+  expect(screen.getByRole('button', { name: 'Открыть дневник тренировок' })).toHaveClass('sinhronica-home-diary-card')
 
   const focusCard = screen.getByRole('button', { name: /Продолжи номер Лазурь/i })
   expect(focusCard).toHaveClass('border')
   expect(focusCard).toHaveClass('bg-card')
   expect(focusCard).toHaveClass('sinhronica-home-focus-card')
-  expect(screen.getByRole('article', { name: 'Дневник тренировок скоро появится' })).toHaveClass('sinhronica-home-diary-card')
+  expect(screen.getByRole('button', { name: 'Открыть дневник тренировок' })).toHaveClass('sinhronica-home-diary-card')
 
   await user.click(focusCard)
   expect(onNavigate).toHaveBeenCalledWith('routines')
+  await user.click(screen.getByRole('button', { name: 'Открыть дневник тренировок' }))
+  expect(onNavigate).toHaveBeenCalledWith('diary')
   await user.click(screen.getByRole('button', { name: 'Открыть настройки профиля' }))
   expect(screen.queryByRole('button', { name: 'Настройки' })).not.toBeInTheDocument()
   expect(onNavigate).toHaveBeenCalledWith('settings')

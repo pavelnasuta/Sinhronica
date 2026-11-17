@@ -4,20 +4,22 @@ import type { Idea } from '../types/idea'
 import type { Achievement } from '../features/achievements/achievement-types'
 import type { FigureProgress } from '../stores/figure-progress-store'
 import type { Routine } from '../features/routines/routine-types'
+import type { TrainingEntry } from '../features/training-diary/training-diary-types'
 
 export type UserDataExport = {
-  version: 4
+  version: 5
   exportedAt: string
   profile: AthleteProfile
   ideas: Idea[]
   achievements: Achievement[]
   figureProgress: FigureProgress[]
   routines: Routine[]
+  trainingDiary: TrainingEntry[]
   preferences: { theme: ThemePreference }
 }
 
-export function serializeUserData({ profile, ideas, achievements, figureProgress, routines, theme }: Omit<UserDataExport, 'version' | 'exportedAt' | 'preferences'> & { theme: ThemePreference }): string {
-  return JSON.stringify({ version: 4, exportedAt: new Date().toISOString(), profile, ideas, achievements, figureProgress, routines, preferences: { theme } }, null, 2)
+export function serializeUserData({ profile, ideas, achievements, figureProgress, routines, trainingDiary, theme }: Omit<UserDataExport, 'version' | 'exportedAt' | 'preferences'> & { theme: ThemePreference }): string {
+  return JSON.stringify({ version: 5, exportedAt: new Date().toISOString(), profile, ideas, achievements, figureProgress, routines, trainingDiary, preferences: { theme } }, null, 2)
 }
 
 export function downloadUserData(payload: string): void {

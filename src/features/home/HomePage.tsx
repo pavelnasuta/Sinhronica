@@ -3,6 +3,8 @@ import { ChevronRight } from 'lucide-react'
 import type { RouteName } from '../../app/routes'
 import type { AthleteProfile } from '../../stores/athlete-profile-store'
 import type { FigureProgress } from '../../stores/figure-progress-store'
+import type { TrainingEntry } from '../../features/training-diary/training-diary-types'
+import { getDiaryWeekSummary, diaryCountLabel } from '../../features/training-diary/training-diary-utils'
 import type { Achievement } from '../achievements/achievement-types'
 import { SportRankBadge } from '../profile/sport-rank-badge'
 import { formatRoutineTime, type Routine } from '../routines/routine-types'
@@ -12,6 +14,7 @@ type HomePageProps = {
   routines: Routine[]
   figureProgress: FigureProgress[]
   achievements: Achievement[]
+  entries: TrainingEntry[]
   onNavigate: (route: RouteName) => void
 }
 
@@ -19,8 +22,9 @@ function latestByUpdate<T extends { updatedAt: string }>(items: T[]): T | undefi
   return [...items].sort((left, right) => right.updatedAt.localeCompare(left.updatedAt))[0]
 }
 
-export function HomePage({ profile, routines, figureProgress, achievements, onNavigate }: HomePageProps) {
+export function HomePage({ profile, routines, figureProgress, achievements, entries, onNavigate }: HomePageProps) {
   const latestRoutine = latestByUpdate(routines)
+  const diary = getDiaryWeekSummary(entries)
   const medalCount = achievements.filter((achievement) => achievement.medal !== 'none').length
   const masteredFigures = figureProgress.filter((record) => record.status === 'mastered').length
   const bestScore = achievements.length ? Math.max(...achievements.map((achievement) => achievement.score)) : null
@@ -53,7 +57,7 @@ export function HomePage({ profile, routines, figureProgress, achievements, onNa
 
       <section className="grid gap-3" aria-labelledby="training-diary-title">
         <h2 id="training-diary-title" className="text-xl font-extrabold tracking-[-0.025em]">Дневник тренировок</h2>
-        <article className="sinhronica-home-diary-card rounded-[var(--radius-lg)] border bg-card p-4 shadow-[var(--shadow-card)]" aria-label="Дневник тренировок скоро появится"><p className="text-base font-extrabold">Скоро здесь появится дневник</p><p className="mt-1 text-sm leading-6 text-muted-foreground">Будет хранить тренировки, заметки и путь к следующему выступлению.</p></article>
+        <button type="button" onClick={() => onNavigate('diary')} className="sinhronica-home-diary-card group grid w-full gap-3 rounded-[var(--radius-lg)] border bg-card p-4 text-left shadow-[var(--shadow-card)] transition-transform hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" aria-label="Открыть дневник тренировок"><div className="flex items-start justify-between gap-3"><div><p className="text-base font-extrabold">{diary.count ? `${diaryCountLabel(diary.count)} на этой неделе` : 'Запиши первую тренировку'}</p><p className="mt-1 text-sm leading-6 text-muted-foreground">{diary.count ? 'Твой ритм складывается из маленьких шагов.' : 'Вода, зал, заметки и ощущения — только для тебя.'}</p></div><ChevronRight className="mt-1 h-5 w-5 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" aria-hidden="true" /></div>{diary.moods.length ? <div className="flex items-center gap-2" aria-label="Последние отмеченные ощущения после тренировок">{diary.moods.map((mood, index) => <span key={`${mood}-${index}`} title={mood === 'heavy' ? 'Тяжело' : mood === 'calm' ? 'Спокойно' : mood === 'good' ? 'Хорошо' : 'На подъёме'} className={`h-2.5 w-2.5 rounded-full ${mood === 'heavy' ? 'bg-violet-400' : mood === 'calm' ? 'bg-cyan-400' : mood === 'good' ? 'bg-sky-400' : 'bg-emerald-400'}`} />)}</div> : null}</button>
       </section>
     </section>
   )
