@@ -214,6 +214,28 @@
   background: rgba(10, 18, 73, 0.95);
 }
 
+.sinhronica-breathing-card {
+  background:
+    radial-gradient(circle at 50% 38%, rgba(55, 221, 244, 0.15), transparent 38%),
+    linear-gradient(145deg, rgba(24, 51, 115, 0.96), rgba(30, 35, 103, 0.94));
+  border-color: rgba(118, 228, 255, 0.28);
+}
+
+.sinhronica-breathing-card .text-foreground,
+.sinhronica-breathing-card .text-muted-foreground {
+  color: rgba(246, 248, 255, 0.88);
+}
+
+.sinhronica-breathing-mascot-slot {
+  transition: transform 180ms linear;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sinhronica-breathing-mascot-slot {
+    transition: none;
+  }
+}
+
 .sinhronica-mobile-nav {
   background: var(--bg-app);
   border-color: var(--stroke);

@@ -4,6 +4,7 @@ import { Toaster } from 'sonner'
 import { PwaInstallPrompt } from '../components/pwa-install-prompt'
 import { PwaUpdateNotice } from '../components/pwa-update-notice'
 import { AchievementsPage } from '../features/achievements/AchievementsPage'
+import { BoxBreathingPage } from '../features/box-breathing/BoxBreathingPage'
 import { FiguresCalculatorPage } from '../features/figures/FiguresCalculatorPage'
 import { FiguresCatalogPage } from '../features/figures/FiguresCatalogPage'
 import { HomePage } from '../features/home/HomePage'
@@ -24,7 +25,7 @@ import { appRoutes, type RouteName } from './routes'
 
 function routeFromHash(): RouteName {
   const route = window.location.hash.slice(1)
-  if (route === 'settings' || route === 'figures-catalog' || route === 'figures-calculator' || route === 'diary' || route === 'metronome') return route
+  if (route === 'settings' || route === 'figures-catalog' || route === 'figures-calculator' || route === 'diary' || route === 'metronome' || route === 'box-breathing') return route
   return appRoutes.find((candidate) => candidate.name === route)?.name ?? 'home'
 }
 
@@ -94,6 +95,7 @@ export function App() {
 
   if (activeRoute === 'settings') return <><OfflineStatus /><SettingsPage onBack={() => navigate('home')} /><PwaUpdateNotice /><Toaster richColors position="top-center" closeButton /></>
   if (activeRoute === 'metronome') return <><OfflineStatus /><MetronomePage onBack={() => navigate('useful')} /><PwaUpdateNotice /><Toaster richColors position="top-center" closeButton /></>
+  if (activeRoute === 'box-breathing') return <><OfflineStatus /><BoxBreathingPage onBack={() => navigate('useful')} /><PwaUpdateNotice /><Toaster richColors position="top-center" closeButton /></>
 
   const page = activeRoute === 'useful'
     ? <UsefulPage onNavigate={navigate} />

@@ -13,10 +13,12 @@ it('opens the catalog and calculator from Useful', async () => {
   await user.click(screen.getByRole('button', { name: /Калькулятор баллов/i }))
   await user.click(screen.getByRole('button', { name: /Каталог фигур/i }))
   await user.click(screen.getByRole('button', { name: /Метроном/i }))
+  await user.click(screen.getByRole('button', { name: /Квадратное дыхание/i }))
 
   expect(onNavigate).toHaveBeenNthCalledWith(1, 'figures-calculator')
   expect(onNavigate).toHaveBeenNthCalledWith(2, 'figures-catalog')
   expect(onNavigate).toHaveBeenNthCalledWith(3, 'metronome')
+  expect(onNavigate).toHaveBeenNthCalledWith(4, 'box-breathing')
   expect(screen.getByText('Скоро ещё больше полезного')).toBeInTheDocument()
   expect(screen.getAllByText('В разработке')).toHaveLength(1)
 })

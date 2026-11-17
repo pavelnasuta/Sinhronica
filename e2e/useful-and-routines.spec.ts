@@ -51,6 +51,23 @@ test('opens the metronome from Useful and keeps its controls readable on a phone
   expect(layout.scrollWidth).toBe(layout.clientWidth)
 })
 
+test('opens square breathing from Useful and keeps it usable on a phone', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 })
+  await page.goto('/starter-kit/')
+  await page.getByRole('link', { name: 'Полезное' }).click()
+  await page.getByRole('button', { name: /Квадратное дыхание/i }).click()
+
+  await expect(page.getByRole('heading', { name: 'Квадратное дыхание' })).toBeVisible()
+  await expect(page.getByText('Место для Акви')).toBeVisible()
+  await page.getByRole('button', { name: 'Начать дыхание' }).click()
+  await expect(page.getByRole('button', { name: 'Приостановить дыхание' })).toBeVisible()
+  await page.getByRole('button', { name: 'Приостановить дыхание' }).click()
+  await expect(page.getByRole('button', { name: 'Продолжить дыхание' })).toBeVisible()
+
+  const layout = await page.evaluate(() => ({ scrollWidth: document.documentElement.scrollWidth, clientWidth: document.documentElement.clientWidth }))
+  expect(layout.scrollWidth).toBe(layout.clientWidth)
+})
+
 test('creates a persistent routine structure without mobile overflow', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 })
   await page.goto('/starter-kit/')
