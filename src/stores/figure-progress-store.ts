@@ -44,7 +44,7 @@ function isStatus(value: unknown): value is FigureProgressStatus {
   return value === 'learning' || value === 'improving' || value === 'mastered'
 }
 
-function parseProgress(value: unknown): FigureProgress | null {
+export function parseStoredFigureProgress(value: unknown): FigureProgress | null {
   if (!value || typeof value !== 'object') return null
   const raw = value as Record<string, unknown>
   if (typeof raw.figureCode !== 'string' || !isStatus(raw.status) || typeof raw.updatedAt !== 'string' || Number.isNaN(Date.parse(raw.updatedAt)) || !getFigureByCode(raw.figureCode)) return null
@@ -57,7 +57,7 @@ function readProgress(): FigureProgress[] | null {
   try {
     const parsed = JSON.parse(serialized)
     if (!Array.isArray(parsed)) return null
-    const progress = parsed.map(parseProgress)
+    const progress = parsed.map(parseStoredFigureProgress)
     return progress.every((record): record is FigureProgress => record !== null) ? progress : null
   } catch {
     return null

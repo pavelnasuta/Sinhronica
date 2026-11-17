@@ -1,12 +1,12 @@
-import { ArrowLeft, Download, Send, Share2, Trash2 } from 'lucide-react'
-import { type FormEvent, useEffect, useState } from 'react'
+import { ArrowLeft, Download, Send, Share2, Trash2, Upload } from 'lucide-react'
+import { type ChangeEvent, type FormEvent, useEffect, useRef, useState } from 'react'
 
 import { Button } from '../../components/ui/button'
 import { Input } from '../../components/ui/input'
 import { Label } from '../../components/ui/label'
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '../../components/ui/alert-dialog'
 import { SportRankBadge } from '../../features/profile/sport-rank-badge'
-import { downloadUserData, serializeUserData } from '../../lib/user-data'
+import { downloadUserData, parseUserDataImport, restoreUserData, serializeUserData, type UserDataImport } from '../../lib/user-data'
 import { SPORT_RANKS, formatLocalDate, isValidBirthDate, useAthleteProfileStore } from '../../stores/athlete-profile-store'
 import { useIdeasStore } from '../../stores/ideas-store'
 import { useAchievementsStore } from '../../stores/achievements-store'
@@ -41,6 +41,8 @@ export function SettingsPage({ onBack }: SettingsPageProps) {
   const clearPreferences = usePreferencesStore((state) => state.clear)
   const [draft, setDraft] = useState(() => profile && 'sportRank' in profile ? profile : null)
   const [message, setMessage] = useState('')
+  const [importCandidate, setImportCandidate] = useState<UserDataImport | null>(null)
+  const importInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => { hydrateIdeas(); hydrateAchievements(); hydrateFigureProgress(); hydrateRoutines(); hydrateTrainingDiary() }, [hydrateAchievements, hydrateFigureProgress, hydrateIdeas, hydrateRoutines, hydrateTrainingDiary])
 
@@ -60,6 +62,17 @@ export function SettingsPage({ onBack }: SettingsPageProps) {
   const exportData = () => {
     downloadUserData(serializeUserData({ profile: draft, ideas, achievements, figureProgress, routines, trainingDiary, theme }))
     setMessage('Резервная копия скачана.')
+  }
+  const selectImportFile = async (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    event.target.value = ''
+    if (!file) return
+    try { setImportCandidate(parseUserDataImport(await file.text())) } catch { setMessage('Не удалось прочитать резервную копию. Проверь файл и попробуй ещё раз.') }
+  }
+  const confirmImport = () => {
+    if (!importCandidate) return
+    if (!restoreUserData(importCandidate)) { setMessage('Не удалось сохранить данные из копии в этом браузере.'); setImportCandidate(null); return }
+    window.location.reload()
   }
   const share = async () => {
     const data = { title: 'Синхроника', text: 'Плыви к своим целям в своём ритме 🌊', url: 'https://nasuta.ru/Sinhronica/' }
@@ -87,7 +100,7 @@ export function SettingsPage({ onBack }: SettingsPageProps) {
     </div><Button type="submit" className="mt-5 w-full">Сохранить профиль</Button></form>
     <section className="rounded-[var(--radius-xl)] border bg-card p-5 shadow-[var(--shadow-card)]"><h2 className="text-xl font-extrabold">Оформление</h2><Label htmlFor="settings-theme" className="mt-4 block">Тема оформления</Label><select id="settings-theme" aria-label="Тема оформления" className="mt-1 flex h-11 w-full rounded-md border bg-background px-3" value={theme} onChange={(e) => setTheme(e.target.value as ThemePreference)}><option value="system">Системная</option><option value="dark">Тёмная</option><option value="light">Светлая</option></select></section>
     <section className="overflow-hidden rounded-[var(--radius-xl)] border bg-card shadow-[var(--shadow-card)]"><div className="h-56 bg-[radial-gradient(circle_at_50%_35%,hsl(var(--primary)/0.2),transparent_62%)] p-3"><img src={`${import.meta.env.BASE_URL}onboarding/practice.webp`} alt="" className="h-full w-full object-contain object-center"/></div><div className="p-5"><h2 className="text-xl font-extrabold">Поделиться Синхроникой</h2><p className="mt-2 text-sm text-muted-foreground">Плыви к своим целям в своём ритме 🌊</p><Button type="button" className="mt-4 w-full" onClick={() => void share()}><Share2 aria-hidden="true" />Поделиться приложением с друзьями</Button></div></section>
-    <section className="rounded-[var(--radius-xl)] border bg-card p-5 shadow-[var(--shadow-card)]"><h2 className="text-xl font-extrabold">Данные</h2><p className="mt-2 text-sm leading-6 text-muted-foreground">Экспорт — это резервная копия для сохранения данных или переноса на другое устройство. Она не отправляется разработчикам.</p><Button type="button" variant="outline" className="mt-4 w-full" onClick={exportData}><Download aria-hidden="true" />Экспортировать данные</Button><AlertDialog><AlertDialogTrigger asChild><Button type="button" variant="destructive" className="mt-3 w-full"><Trash2 aria-hidden="true" />Удалить данные с устройства</Button></AlertDialogTrigger><AlertDialogContent><AlertDialogHeader><AlertDialogTitle>Удалить все данные?</AlertDialogTitle><AlertDialogDescription>Профиль, достижения и другие локальные данные на этом устройстве будут удалены без возможности восстановления.</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter><AlertDialogCancel>Отмена</AlertDialogCancel><AlertDialogAction onClick={removeAll}>Удалить мои данные</AlertDialogAction></AlertDialogFooter></AlertDialogContent></AlertDialog></section>
+    <section className="rounded-[var(--radius-xl)] border bg-card p-5 shadow-[var(--shadow-card)]"><h2 className="text-xl font-extrabold">Данные</h2><p className="mt-2 text-sm leading-6 text-muted-foreground">Данные хранятся в localStorage этого браузера и профиля. Они не отправляются на сервер и не синхронизируются между устройствами.</p><Button type="button" variant="outline" className="mt-4 w-full" onClick={exportData}><Download aria-hidden="true" />Экспортировать данные</Button><input ref={importInputRef} type="file" accept="application/json,.json" className="sr-only" aria-label="Выбрать резервную копию" onChange={(event) => void selectImportFile(event)} /><Button type="button" variant="outline" className="mt-3 w-full" onClick={() => importInputRef.current?.click()}><Upload aria-hidden="true" />Загрузить резервную копию</Button><AlertDialog open={Boolean(importCandidate)} onOpenChange={(open) => { if (!open) setImportCandidate(null) }}><AlertDialogContent><AlertDialogHeader><AlertDialogTitle>Заменить данные из резервной копии?</AlertDialogTitle><AlertDialogDescription>Текущие локальные данные на этом устройстве будут заменены. Найдены: профиль, {importCandidate?.achievements.length ?? 0} достижений, {importCandidate?.routines.length ?? 0} номеров и {importCandidate?.trainingDiary.length ?? 0} тренировок.</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter><AlertDialogCancel>Отмена</AlertDialogCancel><AlertDialogAction onClick={confirmImport}>Заменить данные</AlertDialogAction></AlertDialogFooter></AlertDialogContent></AlertDialog><AlertDialog><AlertDialogTrigger asChild><Button type="button" variant="destructive" className="mt-3 w-full"><Trash2 aria-hidden="true" />Удалить данные с устройства</Button></AlertDialogTrigger><AlertDialogContent><AlertDialogHeader><AlertDialogTitle>Удалить все данные?</AlertDialogTitle><AlertDialogDescription>Профиль, достижения и другие локальные данные на этом устройстве будут удалены без возможности восстановления.</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter><AlertDialogCancel>Отмена</AlertDialogCancel><AlertDialogAction onClick={removeAll}>Удалить мои данные</AlertDialogAction></AlertDialogFooter></AlertDialogContent></AlertDialog></section>
     <section className="rounded-[var(--radius-xl)] border bg-card p-5 shadow-[var(--shadow-card)]"><h2 className="text-xl font-extrabold">Авторы</h2><p className="mt-2 text-sm text-muted-foreground">Насута Павел · Насута Таисия</p><a href="https://t.me/pavelnasuta" target="_blank" rel="noreferrer" className="mt-4 inline-flex min-h-11 items-center gap-2 text-sm font-bold text-primary underline-offset-4 hover:underline"><Send className="h-4 w-4" aria-hidden="true"/>Предложить доработку</a></section>
     {message ? <p role="status" className="text-center text-sm text-muted-foreground">{message}</p> : null}
   </main></div>

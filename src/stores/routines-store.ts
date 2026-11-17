@@ -33,7 +33,7 @@ function normalizeBlocks(value: unknown): RoutineBlock[] | null {
   return blocks
 }
 
-function normalizeStoredRoutine(value: unknown): Routine | null {
+export function parseStoredRoutine(value: unknown): Routine | null {
   if (!value || typeof value !== 'object') return null
   const raw = value as Record<string, unknown>
   if (typeof raw.id !== 'string' || typeof raw.createdAt !== 'string' || typeof raw.updatedAt !== 'string' || Number.isNaN(Date.parse(raw.createdAt)) || Number.isNaN(Date.parse(raw.updatedAt))) return null
@@ -45,7 +45,7 @@ function normalizeStoredRoutine(value: unknown): Routine | null {
 function readRoutines(): Routine[] | null {
   const serialized = storage.getItem(ROUTINES_STORAGE_KEY)
   if (serialized === null) return []
-  try { const parsed = JSON.parse(serialized); if (!Array.isArray(parsed)) return null; const routines = parsed.map(normalizeStoredRoutine); return routines.every((routine): routine is Routine => routine !== null) ? routines : null } catch { return null }
+  try { const parsed = JSON.parse(serialized); if (!Array.isArray(parsed)) return null; const routines = parsed.map(parseStoredRoutine); return routines.every((routine): routine is Routine => routine !== null) ? routines : null } catch { return null }
 }
 
 function persist(set: (state: Partial<RoutinesState>) => void, routines: Routine[]) {

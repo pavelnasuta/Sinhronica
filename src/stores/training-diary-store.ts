@@ -20,7 +20,7 @@ const unavailableStorage: SafeStorage = { getItem: () => null, setItem: () => fa
 const getStorage = (): SafeStorage => { try { return typeof window === 'undefined' ? unavailableStorage : createSafeStorage(window.localStorage) } catch { return unavailableStorage } }
 const storage = getStorage()
 
-function normalizeStoredEntry(value: unknown): TrainingEntry | null {
+export function parseStoredTrainingEntry(value: unknown): TrainingEntry | null {
   if (!value || typeof value !== 'object') return null
   const raw = value as Record<string, unknown>
   if (typeof raw.id !== 'string' || typeof raw.createdAt !== 'string' || typeof raw.updatedAt !== 'string' || Number.isNaN(Date.parse(raw.createdAt)) || Number.isNaN(Date.parse(raw.updatedAt))) return null
@@ -31,7 +31,7 @@ function normalizeStoredEntry(value: unknown): TrainingEntry | null {
 function readEntries(): TrainingEntry[] | null {
   const serialized = storage.getItem(TRAINING_DIARY_STORAGE_KEY)
   if (serialized === null) return []
-  try { const parsed = JSON.parse(serialized); if (!Array.isArray(parsed)) return null; const entries = parsed.map(normalizeStoredEntry); return entries.every((entry): entry is TrainingEntry => entry !== null) ? entries : null } catch { return null }
+  try { const parsed = JSON.parse(serialized); if (!Array.isArray(parsed)) return null; const entries = parsed.map(parseStoredTrainingEntry); return entries.every((entry): entry is TrainingEntry => entry !== null) ? entries : null } catch { return null }
 }
 
 function persist(set: (state: Partial<TrainingDiaryState>) => void, entries: TrainingEntry[]) {

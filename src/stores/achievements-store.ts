@@ -35,7 +35,7 @@ function getStorage(): SafeStorage {
 
 const storage = getStorage()
 
-function parseAchievement(value: unknown): Achievement | null {
+export function parseStoredAchievement(value: unknown): Achievement | null {
   if (!value || typeof value !== 'object') return null
   const raw = value as Record<string, unknown>
   if (typeof raw.id !== 'string' || typeof raw.createdAt !== 'string' || typeof raw.updatedAt !== 'string' || Number.isNaN(Date.parse(raw.createdAt)) || Number.isNaN(Date.parse(raw.updatedAt))) return null
@@ -56,7 +56,7 @@ function readAchievements(): Achievement[] | null {
   try {
     const parsed = JSON.parse(serialized)
     if (!Array.isArray(parsed)) return null
-    const records = parsed.map(parseAchievement)
+    const records = parsed.map(parseStoredAchievement)
     return records.every((record): record is Achievement => record !== null) ? records : null
   } catch {
     return null
