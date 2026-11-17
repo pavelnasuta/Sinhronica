@@ -15,6 +15,14 @@ it('uses a red trace for a heavy post-training feeling on the home diary card', 
   expect(screen.getByTitle('Тяжело')).toHaveClass('bg-red-400')
 })
 
+it('promotes the official Aqui sticker pack on MAX', () => {
+  render(<HomePage profile={profile} routines={[]} figureProgress={[]} achievements={[]} entries={[]} onNavigate={vi.fn()} />)
+
+  expect(screen.getByRole('heading', { name: 'Акви теперь в MAX' })).toBeVisible()
+  expect(screen.getByRole('img', { name: 'Стикер Акви в круге для плавания' })).toBeVisible()
+  expect(screen.getByRole('link', { name: /Открыть стикерпак в MAX/i })).toHaveAttribute('href', 'https://max.ru/stickerset/5nMnC50r-zfjveuv8tiRMN_2IaZYDdnEz4bTjJ8m2e0')
+})
+
 it('shows a personal home header, current focus and local progress', async () => {
   const user = userEvent.setup()
   const onNavigate = vi.fn()

@@ -196,6 +196,24 @@
   border-color: rgba(191, 220, 255, 0.2);
 }
 
+.sinhronica-home-stickers-card {
+  background:
+    radial-gradient(circle at 90% 16%, rgba(255, 255, 255, 0.42), transparent 23%),
+    radial-gradient(circle at 4% 90%, rgba(0, 239, 246, 0.55), transparent 38%),
+    linear-gradient(130deg, #2d48df 0%, #7430e8 51%, #ce32dc 100%);
+  border-color: rgba(255, 255, 255, 0.28);
+  box-shadow: 0 18px 38px rgba(83, 35, 210, 0.35), 0 0 34px rgba(66, 210, 255, 0.16);
+}
+
+.sinhronica-max-sticker-link {
+  background: rgba(10, 18, 73, 0.82);
+  box-shadow: 0 8px 18px rgba(21, 10, 74, 0.28);
+}
+
+.sinhronica-max-sticker-link:hover {
+  background: rgba(10, 18, 73, 0.95);
+}
+
 .sinhronica-mobile-nav {
   background: var(--bg-app);
   border-color: var(--stroke);
