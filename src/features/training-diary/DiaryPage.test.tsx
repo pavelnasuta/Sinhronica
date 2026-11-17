@@ -19,7 +19,7 @@ it('creates an editable local training entry with types, note and optional feeli
   await user.click(screen.getByRole('button', { name: 'Хорошо' }))
   await user.click(screen.getByRole('button', { name: 'Сохранить' }))
 
-  expect(screen.getByText(/Вода/)).toBeVisible()
+  expect(screen.getByText((_, element) => element?.tagName === 'P' && element.textContent?.includes('Вода · Акробатика') && element.children.length === 0)).toBeVisible()
   expect(screen.getByText('Поддержки стали увереннее')).toBeVisible()
   expect(screen.getByText('После: Хорошо')).toBeVisible()
 
@@ -45,6 +45,26 @@ it('warns if browser storage cannot save a diary entry', () => {
   useTrainingDiaryStore.setState({ storageStatus: 'unsaved' })
   render(<DiaryPage onBack={vi.fn()} />)
   expect(screen.getByRole('status', { name: 'Состояние хранения' })).toHaveTextContent('Изменения сохранены только в памяти')
+})
+
+it('uses a red mood badge for a hard training session', () => {
+  useTrainingDiaryStore.setState({ entries: [{ id: 'practice', performedOn: '2026-11-16', types: ['water'], mood: 'heavy', createdAt: '2026-11-16T10:00:00.000Z', updatedAt: '2026-11-16T10:00:00.000Z' }], storageStatus: 'unsaved' })
+  render(<DiaryPage onBack={vi.fn()} />)
+  expect(screen.getByText((_, element) => element?.textContent === 'После: Тяжело')).toHaveClass('bg-red-500/15')
+})
+
+it('shows all, water and dryland totals in diary summary tiles', () => {
+  useTrainingDiaryStore.setState({ entries: [
+    { id: 'one', performedOn: '2026-11-16', types: ['water', 'dryland'], createdAt: '2026-11-16T10:00:00.000Z', updatedAt: '2026-11-16T10:00:00.000Z' },
+    { id: 'two', performedOn: '2026-11-15', types: ['water'], createdAt: '2026-11-15T10:00:00.000Z', updatedAt: '2026-11-15T10:00:00.000Z' },
+    { id: 'three', performedOn: '2026-11-14', types: ['acrobatics'], createdAt: '2026-11-14T10:00:00.000Z', updatedAt: '2026-11-14T10:00:00.000Z' },
+  ] })
+  useTrainingDiaryStore.setState({ storageStatus: 'unsaved' })
+  render(<DiaryPage onBack={vi.fn()} />)
+  const summary = screen.getByLabelText('Сводка тренировок')
+  expect(summary).toHaveTextContent('Всего3')
+  expect(summary).toHaveTextContent('Вода2')
+  expect(summary).toHaveTextContent('Суша1')
 })
 
 it('requires a practice type instead of saving an empty entry', async () => {
