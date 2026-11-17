@@ -35,7 +35,7 @@ export default defineConfig({
         scope: base,
         display: 'standalone',
         background_color: '#08143B',
-        theme_color: '#2446CA',
+        theme_color: '#08143B',
         icons: [
           { src: 'icons/sinhronica-v1-icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
           { src: 'icons/sinhronica-v1-icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
