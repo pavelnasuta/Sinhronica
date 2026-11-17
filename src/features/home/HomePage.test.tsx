@@ -23,6 +23,19 @@ it('promotes the official Aqui sticker pack on MAX', () => {
   expect(screen.getByRole('link', { name: /Открыть стикерпак в MAX/i })).toHaveAttribute('href', 'https://max.ru/stickerset/5nMnC50r-zfjveuv8tiRMN_2IaZYDdnEz4bTjJ8m2e0')
 })
 
+it('orders diary, routines and sticker pack after progress', () => {
+  const { container } = render(<HomePage profile={profile} routines={[]} figureProgress={[]} achievements={[]} entries={[]} onNavigate={vi.fn()} />)
+  const headings = ['progress-title', 'training-diary-title', 'focus-title', 'aqui-stickers-title'].map((id) => {
+    const heading = container.querySelector<HTMLElement>(`#${id}`)
+    expect(heading).not.toBeNull()
+    return heading as HTMLElement
+  })
+
+  headings.slice(0, -1).forEach((heading, index) => {
+    expect(heading.compareDocumentPosition(headings[index + 1]) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+  })
+})
+
 it('shows a personal home header, current focus and local progress', async () => {
   const user = userEvent.setup()
   const onNavigate = vi.fn()

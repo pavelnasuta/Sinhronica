@@ -44,6 +44,11 @@ export function HomePage({ profile, routines, figureProgress, achievements, entr
         <div className="grid grid-cols-3 gap-2"><Summary label="Медали" value={medalCount} /><Summary label="Освоены" value={masteredFigures} /><Summary label="Макс. балл" value={bestScore?.toLocaleString('ru-RU') ?? '—'} /></div>
       </section>
 
+      <section className="grid gap-3" aria-labelledby="training-diary-title">
+        <h2 id="training-diary-title" className="text-xl font-extrabold tracking-[-0.025em]">Дневник тренировок</h2>
+        <button type="button" onClick={() => onNavigate('diary')} className="sinhronica-home-diary-card group grid w-full gap-3 rounded-[var(--radius-lg)] border bg-card p-4 text-left shadow-[var(--shadow-card)] transition-transform hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" aria-label="Открыть дневник тренировок"><div className="flex items-start justify-between gap-3"><div><p className="text-base font-extrabold">{diary.count ? `${diaryCountLabel(diary.count)} на этой неделе` : 'Запиши первую тренировку'}</p><p className="mt-1 text-sm leading-6 text-muted-foreground">{diary.count ? 'Твой ритм складывается из маленьких шагов.' : 'Вода, зал, заметки и ощущения — только для тебя.'}</p></div><ChevronRight className="mt-1 h-5 w-5 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" aria-hidden="true" /></div>{diary.moods.length ? <div className="flex items-center gap-2" aria-label="Последние отмеченные ощущения после тренировок">{diary.moods.map((mood, index) => <span key={`${mood}-${index}`} title={TRAINING_MOOD_LABELS[mood]} className={`h-2.5 w-2.5 rounded-full ${moodDotClass(mood)}`} />)}</div> : null}</button>
+      </section>
+
       <section className="grid gap-3" aria-labelledby="focus-title">
         <h2 id="focus-title" className="text-xl font-extrabold tracking-[-0.025em]">Фокус сейчас</h2>
         {latestRoutine ? (
@@ -70,11 +75,6 @@ export function HomePage({ profile, routines, figureProgress, achievements, entr
           </div>
           <img src={`${import.meta.env.BASE_URL}mascots/aqui-max-stickers.png`} alt="Стикер Акви в круге для плавания" className="pointer-events-none absolute bottom-[-2.4rem] right-[-5.9rem] h-[16.5rem] w-[16.5rem] max-w-none object-contain sm:bottom-[-2.75rem] sm:right-[-1.75rem] sm:h-[19rem] sm:w-[19rem]" />
         </article>
-      </section>
-
-      <section className="grid gap-3" aria-labelledby="training-diary-title">
-        <h2 id="training-diary-title" className="text-xl font-extrabold tracking-[-0.025em]">Дневник тренировок</h2>
-        <button type="button" onClick={() => onNavigate('diary')} className="sinhronica-home-diary-card group grid w-full gap-3 rounded-[var(--radius-lg)] border bg-card p-4 text-left shadow-[var(--shadow-card)] transition-transform hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" aria-label="Открыть дневник тренировок"><div className="flex items-start justify-between gap-3"><div><p className="text-base font-extrabold">{diary.count ? `${diaryCountLabel(diary.count)} на этой неделе` : 'Запиши первую тренировку'}</p><p className="mt-1 text-sm leading-6 text-muted-foreground">{diary.count ? 'Твой ритм складывается из маленьких шагов.' : 'Вода, зал, заметки и ощущения — только для тебя.'}</p></div><ChevronRight className="mt-1 h-5 w-5 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" aria-hidden="true" /></div>{diary.moods.length ? <div className="flex items-center gap-2" aria-label="Последние отмеченные ощущения после тренировок">{diary.moods.map((mood, index) => <span key={`${mood}-${index}`} title={TRAINING_MOOD_LABELS[mood]} className={`h-2.5 w-2.5 rounded-full ${moodDotClass(mood)}`} />)}</div> : null}</button>
       </section>
     </section>
   )
