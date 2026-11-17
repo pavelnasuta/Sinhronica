@@ -50,8 +50,11 @@ export function parseUserDataImport(input: string): UserDataImport {
     if (!profile.success || !isValidBirthDate(profile.data.birthDate)) throw new Error()
     const ideas = parseImportPayload(JSON.stringify({ version: 1, exportedAt: data.exportedAt, ideas: data.ideas })).ideas
     const preferences = data.preferences
-    if (!preferences || typeof preferences !== 'object' || !['light', 'dark', 'system'].includes((preferences as Record<string, unknown>).theme as string)) throw new Error()
-    return { version, exportedAt: data.exportedAt, profile: profile.data, ideas, achievements: parseRecords(data.achievements, parseStoredAchievement), figureProgress: parseRecords(data.figureProgress, parseStoredFigureProgress), routines: parseRecords(data.routines, parseStoredRoutine), trainingDiary: version === 5 ? parseRecords(data.trainingDiary, parseStoredTrainingEntry) : [], preferences: { theme: (preferences as { theme: ThemePreference }).theme } }
+    if (!preferences || typeof preferences !== 'object') throw new Error()
+    const importedTheme = (preferences as Record<string, unknown>).theme
+    if (!['light', 'dark', 'system'].includes(importedTheme as string)) throw new Error()
+    const theme: ThemePreference = importedTheme === 'light' ? 'light' : 'dark'
+    return { version, exportedAt: data.exportedAt, profile: profile.data, ideas, achievements: parseRecords(data.achievements, parseStoredAchievement), figureProgress: parseRecords(data.figureProgress, parseStoredFigureProgress), routines: parseRecords(data.routines, parseStoredRoutine), trainingDiary: version === 5 ? parseRecords(data.trainingDiary, parseStoredTrainingEntry) : [], preferences: { theme } }
   } catch {
     throw new Error('Неверный файл резервной копии')
   }

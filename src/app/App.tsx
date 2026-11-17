@@ -31,19 +31,10 @@ function useAppliedTheme() {
   const theme = usePreferencesStore((state) => state.theme)
 
   useEffect(() => {
-    const media = window.matchMedia?.('(prefers-color-scheme: dark)')
-    const applyTheme = () => {
-      const isDark = theme === 'dark' || (theme === 'system' && media?.matches)
-      document.documentElement.classList.toggle('dark', Boolean(isDark))
-      document.documentElement.dataset.theme = isDark ? 'dark' : 'light'
-      document.querySelector('meta[name="theme-color"]')?.setAttribute('content', isDark ? '#08143B' : '#F5F8FF')
-    }
-
-    applyTheme()
-    if (theme !== 'system' || !media) return undefined
-
-    media.addEventListener?.('change', applyTheme)
-    return () => media.removeEventListener?.('change', applyTheme)
+    const isDark = theme === 'dark'
+    document.documentElement.classList.toggle('dark', isDark)
+    document.documentElement.dataset.theme = isDark ? 'dark' : 'light'
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', isDark ? '#08143B' : '#F5F8FF')
   }, [theme])
 }
 

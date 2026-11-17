@@ -23,6 +23,11 @@ describe('user data export', () => {
     expect(parseUserDataImport(backup)).toMatchObject({ version: 4, profile: { name: 'Алина' }, trainingDiary: [], preferences: { theme: 'dark' } })
   })
 
+  it('migrates a legacy system theme to dark', () => {
+    const backup = JSON.stringify({ version: 5, exportedAt: '2026-11-16T12:00:00.000Z', profile: { name: 'Алина', birthDate: '2014-11-16', city: 'Казань', sportRank: 'дельфиник' }, ideas: [], achievements: [], figureProgress: [], routines: [], trainingDiary: [], preferences: { theme: 'system' } })
+    expect(parseUserDataImport(backup).preferences.theme).toBe('dark')
+  })
+
   it('replaces namespaced local data from a validated backup without touching unrelated storage', () => {
     const backup = parseUserDataImport(JSON.stringify({ version: 5, exportedAt: '2026-11-16T12:00:00.000Z', profile: { name: 'Алина', birthDate: '2014-11-16', city: 'Казань', sportRank: 'дельфиник' }, ideas: [], achievements: [], figureProgress: [], routines: [], trainingDiary: [{ id: 'practice', performedOn: '2026-11-16', types: ['water'], mood: 'good', createdAt: '2026-11-16T00:00:00.000Z', updatedAt: '2026-11-16T00:00:00.000Z' }], preferences: { theme: 'dark' } }))
     localStorage.setItem('sinhronica:training-diary:v1', 'old')

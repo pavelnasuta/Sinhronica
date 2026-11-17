@@ -2,7 +2,7 @@ import { create } from 'zustand'
 
 import { createSafeStorage, type SafeStorage } from '../lib/browser-storage'
 
-export type ThemePreference = 'light' | 'dark' | 'system'
+export type ThemePreference = 'light' | 'dark'
 
 type PreferencesState = {
   theme: ThemePreference
@@ -31,7 +31,7 @@ function getStorage(): SafeStorage {
 
 function readTheme(storage: SafeStorage): ThemePreference {
   const value = storage.getItem(PREFERENCES_STORAGE_KEY)
-  return value === 'light' || value === 'dark' || value === 'system' ? value : 'system'
+  return value === 'light' ? value : 'dark'
 }
 
 const storage = getStorage()
@@ -44,6 +44,6 @@ export const usePreferencesStore = create<PreferencesState>((set) => ({
   },
   clear: () => {
     storage.removeItem(PREFERENCES_STORAGE_KEY)
-    set({ theme: 'system' })
+    set({ theme: 'dark' })
   },
 }))

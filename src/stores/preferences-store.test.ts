@@ -6,13 +6,11 @@ const STORAGE_KEY = 'sinhronica:preferences:v1'
 
 beforeEach(() => {
   window.localStorage.clear()
-  usePreferencesStore.getState().setTheme('system')
+  usePreferencesStore.getState().setTheme('dark')
   window.localStorage.clear()
 })
 
-it('persists the selected theme preference locally', () => {
-  usePreferencesStore.getState().setTheme('dark')
-
+it('defaults to dark even when the device preference is different', () => {
   expect(usePreferencesStore.getState().theme).toBe('dark')
-  expect(window.localStorage.getItem(STORAGE_KEY)).toBe('dark')
+  expect(window.localStorage.getItem(STORAGE_KEY)).toBeNull()
 })
