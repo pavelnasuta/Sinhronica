@@ -18,6 +18,7 @@ it('uses the expanded personal header only on the home page', () => {
 
   expect(screen.getByRole('heading', { name: 'Привет, Алина' })).toBeVisible()
   expect(screen.getByText('дельфиник')).toBeVisible()
-  expect(screen.getByRole('button', { name: 'Настройки' })).toBeVisible()
+  expect(screen.getByRole('button', { name: 'Открыть настройки профиля' })).toBeVisible()
+  expect(screen.queryByRole('button', { name: 'Настройки' })).not.toBeInTheDocument()
   expect(screen.getByRole('img', { name: 'Акви рядом с твоими планами' })).toBeVisible()
 })

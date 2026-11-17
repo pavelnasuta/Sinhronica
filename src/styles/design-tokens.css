@@ -154,6 +154,48 @@
   box-shadow: var(--shadow-card);
 }
 
+[data-theme='dark'] .sinhronica-home-header {
+  background: radial-gradient(ellipse at 78% 50%, rgba(55, 221, 244, 0.13), transparent 48%),
+    radial-gradient(ellipse at 94% 8%, rgba(126, 56, 250, 0.16), transparent 45%);
+}
+
+[data-theme='dark'] .sinhronica-home-progress-card {
+  background: var(--gradient-ocean);
+  border-color: rgba(105, 240, 255, 0.34);
+  box-shadow: 0 14px 30px rgba(0, 141, 219, 0.28);
+}
+
+[data-theme='dark'] .sinhronica-home-progress-card .text-muted-foreground {
+  color: rgba(241, 253, 255, 0.84);
+}
+
+[data-theme='dark'] .sinhronica-home-progress-card:nth-child(1) {
+  background: linear-gradient(145deg, #22e9f0 0%, #069edc 50%, #0753bb 100%);
+}
+
+[data-theme='dark'] .sinhronica-home-progress-card:nth-child(2) {
+  background: linear-gradient(145deg, #38edf5 0%, #119ee9 46%, #0752b9 100%);
+}
+
+[data-theme='dark'] .sinhronica-home-progress-card:nth-child(3) {
+  background: linear-gradient(145deg, #0ad4e7 0%, #087fd7 48%, #1448b2 100%);
+}
+
+[data-theme='dark'] .sinhronica-home-focus-card {
+  background: var(--gradient-brand);
+  border-color: rgba(115, 239, 255, 0.36);
+  box-shadow: 0 16px 34px rgba(17, 78, 196, 0.32), 0 0 30px rgba(55, 221, 244, 0.12);
+}
+
+[data-theme='dark'] .sinhronica-home-focus-card .text-muted-foreground {
+  color: rgba(245, 250, 255, 0.86);
+}
+
+[data-theme='dark'] .sinhronica-home-diary-card {
+  background: linear-gradient(135deg, rgba(20, 38, 93, 0.98), rgba(29, 51, 111, 0.78));
+  border-color: rgba(191, 220, 255, 0.2);
+}
+
 .sinhronica-mobile-nav {
   background: var(--bg-app);
   border-color: var(--stroke);

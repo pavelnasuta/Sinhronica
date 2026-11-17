@@ -1,4 +1,4 @@
-import { ChevronRight, Settings } from 'lucide-react'
+import { ChevronRight } from 'lucide-react'
 
 import type { RouteName } from '../../app/routes'
 import type { AthleteProfile } from '../../stores/athlete-profile-store'
@@ -27,12 +27,11 @@ export function HomePage({ profile, routines, figureProgress, achievements, onNa
 
   return (
     <section className="mx-auto grid max-w-3xl gap-6" aria-labelledby="home-title">
-      <header className="relative min-h-32 overflow-hidden px-1 py-4 sm:py-5">
-        <div className="relative z-10 max-w-[calc(100%-6.5rem)] space-y-2">
+      <header className="sinhronica-home-header relative min-h-32 overflow-hidden px-1 py-4 sm:py-5">
+        <button type="button" onClick={() => onNavigate('settings')} className="group relative z-10 flex max-w-[calc(100%-6.5rem)] flex-col items-start gap-2 rounded-[var(--radius-md)] text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" aria-label="Открыть настройки профиля">
           <h1 id="home-title" className="text-3xl font-extrabold tracking-[-0.04em] sm:text-4xl">Привет, {profile.name}</h1>
-          <SportRankBadge rank={profile.sportRank} />
-        </div>
-        <button type="button" onClick={() => onNavigate('settings')} className="absolute right-4 top-4 inline-flex min-h-11 min-w-11 items-center justify-center rounded-[var(--radius-md)] text-muted-foreground transition-colors hover:bg-background/70 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" aria-label="Настройки"><Settings className="h-5 w-5" aria-hidden="true" /></button>
+          <span className="inline-flex items-center gap-1.5"><SportRankBadge rank={profile.sportRank} /><ChevronRight className="h-4 w-4 text-muted-foreground transition-transform group-hover:translate-x-0.5" aria-hidden="true" /></span>
+        </button>
         <img src={`${import.meta.env.BASE_URL}mascots/aqui-thinking.png`} alt="Акви рядом с твоими планами" className="pointer-events-none absolute bottom-[-0.5rem] right-1 h-28 w-28 object-contain object-bottom sm:right-4" />
       </header>
 
@@ -44,22 +43,22 @@ export function HomePage({ profile, routines, figureProgress, achievements, onNa
       <section className="grid gap-3" aria-labelledby="focus-title">
         <h2 id="focus-title" className="text-xl font-extrabold tracking-[-0.025em]">Фокус сейчас</h2>
         {latestRoutine ? (
-          <button type="button" onClick={() => onNavigate('routines')} className="group grid w-full gap-3 rounded-[var(--radius-lg)] border bg-card p-4 text-left shadow-[var(--shadow-card)] transition-transform hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+          <button type="button" onClick={() => onNavigate('routines')} className="sinhronica-home-focus-card group grid w-full gap-3 rounded-[var(--radius-lg)] border bg-card p-4 text-left shadow-[var(--shadow-card)] transition-transform hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
             <div className="flex items-start justify-between gap-3"><div className="min-w-0"><p className="text-sm font-bold text-primary">Продолжи номер</p><p className="mt-1 truncate text-xl font-extrabold tracking-[-0.025em]">{latestRoutine.title}</p><p className="mt-1 text-sm text-muted-foreground">{latestRoutine.blocks.length} {latestRoutine.blocks.length === 1 ? 'блок' : latestRoutine.blocks.length > 1 && latestRoutine.blocks.length < 5 ? 'блока' : 'блоков'}{latestRoutine.targetDurationSeconds !== undefined ? ` · ${formatRoutineTime(latestRoutine.targetDurationSeconds)}` : ''}</p></div><ChevronRight className="mt-1 h-5 w-5 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" aria-hidden="true" /></div>
           </button>
         ) : (
-          <button type="button" onClick={() => onNavigate('routines')} className="group grid w-full gap-2 rounded-[var(--radius-lg)] border bg-card p-4 text-left shadow-[var(--shadow-card)] transition-transform hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"><div className="flex items-start justify-between gap-3"><div><p className="text-sm font-bold text-primary">Первый шаг</p><p className="mt-1 text-xl font-extrabold tracking-[-0.025em]">Собери свой первый номер</p><p className="mt-1 text-sm leading-6 text-muted-foreground">Добавь состав, хронометраж и структуру — всё останется на этом устройстве.</p></div><ChevronRight className="mt-1 h-5 w-5 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" aria-hidden="true" /></div></button>
+          <button type="button" onClick={() => onNavigate('routines')} className="sinhronica-home-focus-card group grid w-full gap-2 rounded-[var(--radius-lg)] border bg-card p-4 text-left shadow-[var(--shadow-card)] transition-transform hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"><div className="flex items-start justify-between gap-3"><div><p className="text-sm font-bold text-primary">Первый шаг</p><p className="mt-1 text-xl font-extrabold tracking-[-0.025em]">Собери свой первый номер</p><p className="mt-1 text-sm leading-6 text-muted-foreground">Добавь состав, хронометраж и структуру — всё останется на этом устройстве.</p></div><ChevronRight className="mt-1 h-5 w-5 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" aria-hidden="true" /></div></button>
         )}
       </section>
 
       <section className="grid gap-3" aria-labelledby="training-diary-title">
         <h2 id="training-diary-title" className="text-xl font-extrabold tracking-[-0.025em]">Дневник тренировок</h2>
-        <article className="rounded-[var(--radius-lg)] border bg-card p-4 shadow-[var(--shadow-card)]" aria-label="Дневник тренировок скоро появится"><p className="text-base font-extrabold">Скоро здесь появится дневник</p><p className="mt-1 text-sm leading-6 text-muted-foreground">Будет хранить тренировки, заметки и путь к следующему выступлению.</p></article>
+        <article className="sinhronica-home-diary-card rounded-[var(--radius-lg)] border bg-card p-4 shadow-[var(--shadow-card)]" aria-label="Дневник тренировок скоро появится"><p className="text-base font-extrabold">Скоро здесь появится дневник</p><p className="mt-1 text-sm leading-6 text-muted-foreground">Будет хранить тренировки, заметки и путь к следующему выступлению.</p></article>
       </section>
     </section>
   )
 }
 
 function Summary({ label, value }: { label: string; value: number | string }) {
-  return <div className="rounded-[var(--radius-md)] border bg-card p-3 shadow-[var(--shadow-card)]"><p className="text-xs font-bold text-muted-foreground">{label}</p><p className="mt-1 truncate text-2xl font-extrabold tracking-[-0.03em]">{value}</p></div>
+  return <div className="sinhronica-home-progress-card rounded-[var(--radius-md)] border bg-card p-3 shadow-[var(--shadow-card)]"><p className="text-xs font-bold text-muted-foreground">{label}</p><p className="mt-1 truncate text-2xl font-extrabold tracking-[-0.03em]">{value}</p></div>
 }
