@@ -34,6 +34,23 @@ test('opens the figures catalog and score calculator from Useful without mobile 
   expect(layout.scrollWidth).toBe(layout.clientWidth)
 })
 
+test('opens the metronome from Useful and keeps its controls readable on a phone', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 })
+  await page.goto('/starter-kit/')
+  await page.getByRole('link', { name: 'Полезное' }).click()
+  await page.getByRole('button', { name: /Метроном/i }).click()
+
+  await expect(page.getByRole('heading', { name: 'Метроном' })).toBeVisible()
+  await expect(page.getByLabel('Темп в ударах в минуту')).toHaveValue('100')
+  await page.getByRole('button', { name: 'Увеличить темп' }).click()
+  await expect(page.getByLabel('Темп в ударах в минуту')).toHaveValue('101')
+  await page.getByRole('button', { name: 'Запустить метроном' }).click()
+  await expect(page.getByRole('button', { name: 'Приостановить метроном' })).toBeVisible()
+
+  const layout = await page.evaluate(() => ({ scrollWidth: document.documentElement.scrollWidth, clientWidth: document.documentElement.clientWidth }))
+  expect(layout.scrollWidth).toBe(layout.clientWidth)
+})
+
 test('creates a persistent routine structure without mobile overflow', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 })
   await page.goto('/starter-kit/')

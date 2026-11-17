@@ -8,6 +8,7 @@ import { FiguresCalculatorPage } from '../features/figures/FiguresCalculatorPage
 import { FiguresCatalogPage } from '../features/figures/FiguresCatalogPage'
 import { HomePage } from '../features/home/HomePage'
 import { DiaryPage } from '../features/training-diary/DiaryPage'
+import { MetronomePage } from '../features/metronome/MetronomePage'
 import { Onboarding } from '../features/onboarding/Onboarding'
 import { RoutinesPage } from '../features/routines/RoutinesPage'
 import { SettingsPage } from '../features/settings/SettingsPage'
@@ -23,7 +24,7 @@ import { appRoutes, type RouteName } from './routes'
 
 function routeFromHash(): RouteName {
   const route = window.location.hash.slice(1)
-  if (route === 'settings' || route === 'figures-catalog' || route === 'figures-calculator' || route === 'diary') return route
+  if (route === 'settings' || route === 'figures-catalog' || route === 'figures-calculator' || route === 'diary' || route === 'metronome') return route
   return appRoutes.find((candidate) => candidate.name === route)?.name ?? 'home'
 }
 
@@ -92,6 +93,7 @@ export function App() {
   if (!hasSportRank(athleteProfile)) return <><OfflineStatus /><Onboarding initialProfile={athleteProfile} /><PwaUpdateNotice /><Toaster richColors position="top-center" closeButton /></>
 
   if (activeRoute === 'settings') return <><OfflineStatus /><SettingsPage onBack={() => navigate('home')} /><PwaUpdateNotice /><Toaster richColors position="top-center" closeButton /></>
+  if (activeRoute === 'metronome') return <><OfflineStatus /><MetronomePage onBack={() => navigate('useful')} /><PwaUpdateNotice /><Toaster richColors position="top-center" closeButton /></>
 
   const page = activeRoute === 'useful'
     ? <UsefulPage onNavigate={navigate} />

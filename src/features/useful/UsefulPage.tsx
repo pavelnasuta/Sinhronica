@@ -1,4 +1,4 @@
-import { BookOpen, Calculator, ChevronRight, Sparkles } from 'lucide-react'
+import { BookOpen, Calculator, ChevronRight, Sparkles, Timer } from 'lucide-react'
 
 import { Button } from '../../components/ui/button'
 import type { RouteName } from '../../app/routes'
@@ -6,6 +6,7 @@ import type { RouteName } from '../../app/routes'
 const modules = [
   { route: 'figures-calculator' as const, title: 'Калькулятор баллов', description: 'Расчёт результатов двух или четырёх фигур по оценкам судей и DD.', Icon: Calculator },
   { route: 'figures-catalog' as const, title: 'Каталог фигур', description: '20 фигур, DD, подтверждённые связи BP/BM и личный прогресс освоения.', Icon: BookOpen },
+  { route: 'metronome' as const, title: 'Метроном', description: 'Темп, счёт на четыре и сильная первая доля для тренировок.', Icon: Timer },
 ] satisfies Array<{ route: RouteName; title: string; description: string; Icon: typeof Calculator }>
 
 export function UsefulPage({ onNavigate }: { onNavigate: (route: RouteName) => void }) {

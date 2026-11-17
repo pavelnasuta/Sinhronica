@@ -1,4 +1,4 @@
-export type RouteName = 'home' | 'useful' | 'routines' | 'achievements' | 'diary' | 'settings' | 'figures-catalog' | 'figures-calculator'
+export type RouteName = 'home' | 'useful' | 'routines' | 'achievements' | 'diary' | 'settings' | 'figures-catalog' | 'figures-calculator' | 'metronome'
 export type PrimaryRouteName = 'home' | 'useful' | 'routines' | 'achievements'
 
 export type AppRoute = {
