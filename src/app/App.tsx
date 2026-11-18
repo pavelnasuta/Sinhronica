@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Toaster } from 'sonner'
 
 import { PwaInstallPrompt } from '../components/pwa-install-prompt'
@@ -21,6 +21,7 @@ import { usePreferencesStore } from '../stores/preferences-store'
 import { useRoutinesStore } from '../stores/routines-store'
 import { useTrainingDiaryStore } from '../stores/training-diary-store'
 import { AppShell } from './layouts/AppShell'
+import { trackRouteView } from './metrica'
 import { appRoutes, type RouteName } from './routes'
 
 function routeFromHash(): RouteName {
@@ -61,6 +62,7 @@ function OfflineStatus() {
 
 export function App() {
   const [activeRoute, setActiveRoute] = useState<RouteName>(routeFromHash)
+  const trackedRoute = useRef(activeRoute)
   const athleteProfile = useAthleteProfileStore((state) => state.profile)
   const routines = useRoutinesStore((state) => state.routines)
   const hydrateRoutines = useRoutinesStore((state) => state.hydrate)
@@ -77,6 +79,12 @@ export function App() {
     window.addEventListener('hashchange', syncRoute)
     return () => window.removeEventListener('hashchange', syncRoute)
   }, [])
+
+  useEffect(() => {
+    if (trackedRoute.current === activeRoute) return
+    trackedRoute.current = activeRoute
+    trackRouteView(activeRoute)
+  }, [activeRoute])
 
   useEffect(() => {
     hydrateRoutines()
