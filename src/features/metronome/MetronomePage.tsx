@@ -20,7 +20,7 @@ export function MetronomePage({ onBack }: { onBack: () => void }) {
   const [running, setRunning] = useState(false)
   const [startedAt, setStartedAt] = useState<number | null>(null)
   const [activeBeat, setActiveBeat] = useState(0)
-  useMetronomeAudio({ running, bpm, startedAt })
+  const unlockAudio = useMetronomeAudio({ running, bpm, startedAt })
 
   useEffect(() => {
     if (!running || startedAt === null) return undefined
@@ -61,6 +61,7 @@ export function MetronomePage({ onBack }: { onBack: () => void }) {
       setActiveBeat(0)
       setStartedAt(null)
     } else {
+      unlockAudio()
       setActiveBeat(0)
       setStartedAt(performance.now())
     }

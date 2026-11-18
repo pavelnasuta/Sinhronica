@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
 
 type MetronomeAudioProps = {
   running: boolean
@@ -13,14 +13,37 @@ type AudioContextWindow = Window & typeof globalThis & {
 const SCHEDULE_AHEAD_SECONDS = 0.12
 const SCHEDULER_INTERVAL_MS = 25
 
-export function useMetronomeAudio({ running, bpm, startedAt }: MetronomeAudioProps): void {
+export function useMetronomeAudio({ running, bpm, startedAt }: MetronomeAudioProps): () => void {
+  const contextRef = useRef<AudioContext | null>(null)
+
+  const getContext = useCallback(() => {
+    if (contextRef.current) return contextRef.current
+
+    const AudioContextConstructor = window.AudioContext ?? (window as AudioContextWindow).webkitAudioContext
+    if (!AudioContextConstructor) return null
+
+    const context = new AudioContextConstructor()
+    contextRef.current = context
+    return context
+  }, [])
+
+  const unlockAudio = useCallback(() => {
+    const context = getContext()
+    if (context && context.state !== 'running') void context.resume().catch(() => undefined)
+  }, [getContext])
+
+  useEffect(() => () => {
+    const context = contextRef.current
+    contextRef.current = null
+    if (context && context.state !== 'closed') void context.close()
+  }, [])
+
   useEffect(() => {
     if (!running || startedAt === null) return undefined
 
-    const AudioContextConstructor = window.AudioContext ?? (window as AudioContextWindow).webkitAudioContext
-    if (!AudioContextConstructor) return undefined
+    const context = contextRef.current
+    if (!context) return undefined
 
-    const context = new AudioContextConstructor()
     let nextBeatAt = context.currentTime
     let beat = 0
 
@@ -42,6 +65,7 @@ export function useMetronomeAudio({ running, bpm, startedAt }: MetronomeAudioPro
     }
 
     const schedule = () => {
+      if (context.state !== 'running') return
       if (nextBeatAt < context.currentTime - SCHEDULE_AHEAD_SECONDS) resync()
       while (nextBeatAt < context.currentTime + SCHEDULE_AHEAD_SECONDS) {
         scheduleClick(nextBeatAt, beat === 0)
@@ -50,16 +74,28 @@ export function useMetronomeAudio({ running, bpm, startedAt }: MetronomeAudioPro
       }
     }
 
-    void context.resume().then(schedule).catch(() => undefined)
+    const resumeAndSchedule = () => {
+      if (context.state === 'running') {
+        schedule()
+        return
+      }
+      void context.resume().then(schedule).catch(() => undefined)
+    }
+
+    resumeAndSchedule()
     const handleVisibilityChange = () => {
-      if (!document.hidden) resync()
+      if (!document.hidden) {
+        resync()
+        resumeAndSchedule()
+      }
     }
     document.addEventListener('visibilitychange', handleVisibilityChange)
     const interval = window.setInterval(schedule, SCHEDULER_INTERVAL_MS)
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange)
       window.clearInterval(interval)
-      void context.close()
     }
   }, [bpm, running, startedAt])
+
+  return unlockAudio
 }
