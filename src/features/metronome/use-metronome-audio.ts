@@ -29,7 +29,15 @@ export function useMetronomeAudio({ running, bpm, startedAt }: MetronomeAudioPro
 
   const unlockAudio = useCallback(() => {
     const context = getContext()
-    if (context && context.state !== 'running') void context.resume().catch(() => undefined)
+    if (!context || context.state === 'running') return
+
+    void context.resume().catch(() => undefined)
+    const oscillator = context.createOscillator()
+    const gain = context.createGain()
+    gain.gain.value = 0.0001
+    oscillator.connect(gain).connect(context.destination)
+    oscillator.start()
+    oscillator.stop(context.currentTime + 0.01)
   }, [getContext])
 
   useEffect(() => () => {
