@@ -43,7 +43,7 @@ it('shows a personal home header, current focus and local progress', async () =>
 
   expect(screen.getByRole('heading', { name: 'Привет, Алина' })).toBeVisible()
   expect(screen.getByText('дельфиник')).toBeVisible()
-  expect(screen.getByRole('img', { name: 'Акви рядом с твоими планами' })).toBeVisible()
+  expect(screen.getByRole('img', { name: 'Акви рядом с твоими планами' })).toHaveAttribute('src', '/mascots/aqui-shining-waves.png')
   expect(screen.getByRole('banner')).not.toHaveClass('border')
   expect(screen.getByRole('banner')).not.toHaveClass('rounded-[var(--radius-xl)]')
   expect(screen.getByRole('banner')).toHaveClass('sinhronica-home-header')

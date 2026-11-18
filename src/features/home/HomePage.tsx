@@ -36,7 +36,7 @@ export function HomePage({ profile, routines, figureProgress, achievements, entr
           <h1 id="home-title" className="text-3xl font-extrabold tracking-[-0.04em] sm:text-4xl">Привет, {profile.name}</h1>
           <span className="inline-flex items-center gap-1.5"><SportRankBadge rank={profile.sportRank} /><ChevronRight className="h-4 w-4 text-muted-foreground transition-transform group-hover:translate-x-0.5" aria-hidden="true" /></span>
         </button>
-        <img src={`${import.meta.env.BASE_URL}mascots/aqui-thinking.png`} alt="Акви рядом с твоими планами" className="pointer-events-none absolute bottom-[-0.5rem] right-1 h-28 w-28 object-contain object-bottom sm:right-4" />
+        <img src={`${import.meta.env.BASE_URL}mascots/aqui-shining-waves.png`} alt="Акви рядом с твоими планами" className="pointer-events-none absolute bottom-0 right-1 h-28 w-28 object-contain object-bottom sm:right-4" />
       </header>
 
       <section className="grid gap-3" aria-labelledby="progress-title">

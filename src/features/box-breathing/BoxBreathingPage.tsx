@@ -1,4 +1,4 @@
-import { ArrowLeft, Pause, Play, Wind } from 'lucide-react'
+import { ArrowLeft, Pause, Play } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 
 import { Button } from '../../components/ui/button'
@@ -87,8 +87,8 @@ export function BoxBreathingPage({ onBack }: { onBack: () => void }) {
           <span className="absolute right-0 top-1/2 translate-x-2 -translate-y-1/2 text-xs font-extrabold text-muted-foreground">Задержка</span>
           <span className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-2 text-xs font-extrabold text-muted-foreground">Выдох</span>
           <span className="absolute left-0 top-1/2 -translate-x-2 -translate-y-1/2 text-xs font-extrabold text-muted-foreground">Пауза</span>
-          <div className="sinhronica-breathing-mascot-slot absolute inset-[21%] grid place-items-center rounded-full border border-white/20 bg-white/10 p-3" style={{ transform: `scale(${mascotScale(step.phase, step.phaseProgress)})` }}>
-            <div className="grid justify-items-center gap-1.5"><Wind className="h-8 w-8 text-primary" aria-hidden="true" /><span className="text-xs font-extrabold text-foreground">Место для Акви</span></div>
+          <div className="sinhronica-breathing-mascot-slot absolute inset-[12%] grid place-items-center" style={{ transform: `scale(${mascotScale(step.phase, step.phaseProgress)})` }}>
+            <img src={`${import.meta.env.BASE_URL}mascots/aqui-lotus.png`} alt="Акви в позе лотоса" className="h-full w-full object-contain" />
           </div>
         </div>
 

@@ -58,7 +58,7 @@ test('opens square breathing from Useful and keeps it usable on a phone', async 
   await page.getByRole('button', { name: /Квадратное дыхание/i }).click()
 
   await expect(page.getByRole('heading', { name: 'Квадратное дыхание' })).toBeVisible()
-  await expect(page.getByText('Место для Акви')).toBeVisible()
+  await expect(page.getByRole('img', { name: 'Акви в позе лотоса' })).toHaveAttribute('src', /mascots\/aqui-lotus\.png$/)
   await page.getByRole('button', { name: 'Начать дыхание' }).click()
   await expect(page.getByRole('button', { name: 'Приостановить дыхание' })).toBeVisible()
   await page.getByRole('button', { name: 'Приостановить дыхание' }).click()

@@ -4,12 +4,12 @@ import { expect, it, vi } from 'vitest'
 
 import { BoxBreathingPage } from './BoxBreathingPage'
 
-it('guides an athlete through square breathing with a mascot placeholder', async () => {
+it('guides an athlete through square breathing with a lotus-pose Aqui mascot', async () => {
   const user = userEvent.setup()
   render(<BoxBreathingPage onBack={vi.fn()} />)
 
   expect(screen.getByRole('heading', { name: 'Квадратное дыхание' })).toBeInTheDocument()
-  expect(screen.getByText('Место для Акви')).toBeInTheDocument()
+  expect(screen.getByRole('img', { name: 'Акви в позе лотоса' })).toHaveAttribute('src', '/mascots/aqui-lotus.png')
   expect(screen.getAllByText('Вдох')).toHaveLength(2)
   expect(screen.getAllByText((_, element) => element?.textContent?.includes('4 цикла · 1 минута 4 секунды') ?? false).some((element) => element.tagName === 'P')).toBe(true)
 
