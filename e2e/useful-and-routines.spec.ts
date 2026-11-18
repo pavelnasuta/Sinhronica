@@ -34,6 +34,18 @@ test('opens the figures catalog and score calculator from Useful without mobile 
   expect(layout.scrollWidth).toBe(layout.clientWidth)
 })
 
+test('returns to the top when switching app screens', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 })
+  await page.goto('/starter-kit/')
+  await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight))
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(0)
+
+  await page.getByRole('link', { name: 'Полезное' }).click()
+
+  await expect(page.getByRole('heading', { name: 'Полезное' })).toBeVisible()
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0)
+})
+
 test('opens the metronome from Useful and keeps its controls readable on a phone', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 })
   await page.goto('/starter-kit/')

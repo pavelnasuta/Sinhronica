@@ -81,6 +81,10 @@ export function App() {
   }, [])
 
   useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [activeRoute])
+
+  useEffect(() => {
     if (trackedRoute.current === activeRoute) return
     trackedRoute.current = activeRoute
     trackRouteView(activeRoute)
