@@ -10,7 +10,7 @@ export const TOTAL_DURATION_MS = cycleDurationMs * TOTAL_CYCLES
 
 export function getBreathingStep(elapsedMs: number) {
   if (elapsedMs >= TOTAL_DURATION_MS) {
-    return { phase: 'hold-out' as const, secondsRemaining: 0, cycle: TOTAL_CYCLES, complete: true, phaseProgress: 1, totalProgress: 1 }
+    return { phase: 'hold-out' as const, secondsRemaining: 0, cycle: TOTAL_CYCLES, complete: true, phaseProgress: 1, cycleProgress: 1, totalProgress: 1 }
   }
 
   const safeElapsed = Math.max(0, elapsedMs)
@@ -25,6 +25,7 @@ export function getBreathingStep(elapsedMs: number) {
     cycle,
     complete: false,
     phaseProgress: elapsedInPhase / phaseDurationMs,
+    cycleProgress: elapsedInCycle / cycleDurationMs,
     totalProgress: safeElapsed / TOTAL_DURATION_MS,
   }
 }

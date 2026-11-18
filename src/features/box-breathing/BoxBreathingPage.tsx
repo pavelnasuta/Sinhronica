@@ -66,7 +66,7 @@ export function BoxBreathingPage({ onBack }: { onBack: () => void }) {
   const isComplete = mode === 'complete'
   const buttonLabel = mode === 'running' ? 'Приостановить дыхание' : mode === 'paused' ? 'Продолжить дыхание' : isComplete ? 'Повторить дыхание' : 'Начать дыхание'
   const instruction = isComplete ? 'Ты готова' : PHASE_LABELS[step.phase]
-  const progressLength = Math.round(step.totalProgress * 400)
+  const progressLength = Math.round(step.cycleProgress * 400)
 
   return (
     <div className="sinhronica-settings-shell flex flex-col bg-background">
