@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "exportedAt": "2026-11-18T12:00:00.000Z",
+  "profile": {
+    "name": "Елена",
+    "childName": "Алина",
+    "childBirthDate": "2015-03-18",
+    "city": "Москва"
+  },
+  "entries": [
+    {
+      "id": "trip",
+      "spentOn": "2026-11-18",
+      "amount": 1200,
+      "category": "transport",
+      "comment": "Такси на старт",
+      "createdAt": "2026-11-18T12:00:00.000Z",
+      "updatedAt": "2026-11-18T12:00:00.000Z"
+    }
+  ]
+}

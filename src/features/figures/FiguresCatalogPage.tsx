@@ -26,7 +26,8 @@ function matchesQuery(figure: FigureCatalogEntry, query: string) {
   return !normalized || `${figure.code} ${figure.name_ru} ${figure.age_group}`.toLocaleLowerCase('ru').includes(normalized)
 }
 
-export function FiguresCatalogPage({ onBack }: { onBack: () => void }) {
+export function FiguresCatalogPage({ onBack, backLabel = 'К полезному', audience = 'athlete' }: { onBack: () => void; backLabel?: string; audience?: 'athlete' | 'parent' | 'coach' }) {
+  const athleteMode = audience === 'athlete'
   const [query, setQuery] = useState('')
   const [ageGroup, setAgeGroup] = useState('all')
   const [expandedCode, setExpandedCode] = useState<string | null>(null)
@@ -34,13 +35,13 @@ export function FiguresCatalogPage({ onBack }: { onBack: () => void }) {
   const hydrate = useFigureProgressStore((state) => state.hydrate)
   const setStatus = useFigureProgressStore((state) => state.setStatus)
 
-  useEffect(() => hydrate(), [hydrate])
+  useEffect(() => { if (athleteMode) hydrate() }, [athleteMode, hydrate])
   const visibleFigures = useMemo(() => figuresCatalog.filter((figure) => matchesQuery(figure, query) && (ageGroup === 'all' || figure.age_group === ageGroup)), [ageGroup, query])
-  const statusByFigure = useMemo(() => new Map(progress.map((item) => [item.figureCode, item.status])), [progress])
+  const statusByFigure = useMemo(() => new Map((athleteMode ? progress : []).map((item) => [item.figureCode, item.status])), [athleteMode, progress])
 
   return (
     <section className="mx-auto max-w-3xl space-y-5" aria-labelledby="figures-catalog-title">
-      <Button type="button" variant="ghost" className="-ml-3 gap-2" onClick={onBack}><ArrowLeft className="h-4 w-4" aria-hidden="true" />К полезному</Button>
+      <Button type="button" variant="ghost" className="-ml-3 gap-2" onClick={onBack}><ArrowLeft className="h-4 w-4" aria-hidden="true" />{backLabel}</Button>
       <header className="space-y-2">
         <p className="text-xs font-extrabold uppercase tracking-[0.09em] text-[color:var(--eyebrow)]">Справочник 2026</p>
         <h1 id="figures-catalog-title" className="text-3xl font-extrabold tracking-[-0.04em]">Каталог фигур</h1>
@@ -62,7 +63,7 @@ export function FiguresCatalogPage({ onBack }: { onBack: () => void }) {
             <button type="button" className="w-full p-5 text-left" onClick={() => setExpandedCode(expanded ? null : figure.code)} aria-expanded={expanded} aria-controls={`figure-${figure.code}`}>
               <div className="flex gap-3"><div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[var(--radius-md)] bg-primary/10 text-sm font-extrabold text-primary">{figure.code}</div><div className="min-w-0 flex-1"><div className="flex flex-wrap items-center gap-2"><h2 className="text-lg font-extrabold tracking-[-0.02em]">{figure.name_ru}</h2>{status ? <span className="rounded-full bg-emerald-500/10 px-2 py-1 text-xs font-bold text-emerald-700 dark:text-emerald-300">{statusLabels[status]}</span> : null}</div><p className="mt-1 text-sm text-muted-foreground">{ageGroupLabel(figure.age_group)} · DD {figure.dd.toLocaleString('ru-RU')}</p></div></div>
             </button>
-            {expanded ? <div id={`figure-${figure.code}`} className="space-y-4 border-t px-5 pb-5 pt-4"><p className="text-sm leading-6 text-muted-foreground">{figure.description_ru}</p><div><h3 className="text-sm font-extrabold">Освоение</h3><div className="mt-2 flex flex-wrap gap-2">{(Object.keys(statusLabels) as FigureProgressStatus[]).map((value) => <Button key={value} type="button" size="sm" variant={status === value ? 'default' : 'outline'} onClick={() => setStatus(figure.code, value)}><CheckCircle2 className="h-4 w-4" aria-hidden="true" />{statusLabels[value]}</Button>)}</div></div><div className="grid gap-3 text-sm sm:grid-cols-2"><div><h3 className="font-extrabold">Базовые позиции</h3><p className="mt-1 text-muted-foreground">{references?.positionIds.length ? references.positionIds.join(' · ') : 'Связи не указаны'}</p></div><div><h3 className="font-extrabold">Базовые движения</h3><p className="mt-1 text-muted-foreground">{references?.movementIds.length ? references.movementIds.join(' · ') : 'Не добавляем неподтверждённые цепочки'}</p></div></div>{figure.execution_steps_ru.length ? <div><h3 className="font-extrabold">Последовательность</h3><ol className="mt-2 list-decimal space-y-1 pl-5 text-sm leading-6 text-muted-foreground">{figure.execution_steps_ru.map((step) => <li key={step}>{step}</li>)}</ol></div> : null}<p className="flex gap-2 rounded-[var(--radius-md)] bg-secondary p-3 text-xs leading-5 text-muted-foreground"><BookOpen className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />{figure.technique_source.verified_official_text_2026 ? `${figure.technique_source.document} · проверенный текст 2026` : 'Описание из справочного пакета 2025; сверяй технику с актуальными правилами.'}</p></div> : null}
+            {expanded ? <div id={`figure-${figure.code}`} className="space-y-4 border-t px-5 pb-5 pt-4"><p className="text-sm leading-6 text-muted-foreground">{figure.description_ru}</p>{athleteMode ? <div><h3 className="text-sm font-extrabold">Освоение</h3><div className="mt-2 flex flex-wrap gap-2">{(Object.keys(statusLabels) as FigureProgressStatus[]).map((value) => <Button key={value} type="button" size="sm" variant={status === value ? 'default' : 'outline'} onClick={() => setStatus(figure.code, value)}><CheckCircle2 className="h-4 w-4" aria-hidden="true" />{statusLabels[value]}</Button>)}</div></div> : null}<div className="grid gap-3 text-sm sm:grid-cols-2"><div><h3 className="font-extrabold">Базовые позиции</h3><p className="mt-1 text-muted-foreground">{references?.positionIds.length ? references.positionIds.join(' · ') : 'Связи не указаны'}</p></div><div><h3 className="font-extrabold">Базовые движения</h3><p className="mt-1 text-muted-foreground">{references?.movementIds.length ? references.movementIds.join(' · ') : 'Не добавляем неподтверждённые цепочки'}</p></div></div>{figure.execution_steps_ru.length ? <div><h3 className="font-extrabold">Последовательность</h3><ol className="mt-2 list-decimal space-y-1 pl-5 text-sm leading-6 text-muted-foreground">{figure.execution_steps_ru.map((step) => <li key={step}>{step}</li>)}</ol></div> : null}<p className="flex gap-2 rounded-[var(--radius-md)] bg-secondary p-3 text-xs leading-5 text-muted-foreground"><BookOpen className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />{figure.technique_source.verified_official_text_2026 ? `${figure.technique_source.document} · проверенный текст 2026` : 'Описание из справочного пакета 2025; сверяй технику с актуальными правилами.'}</p></div> : null}
           </article>
         })}
       </div>

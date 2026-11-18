@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { beforeEach, expect, it, vi } from 'vitest'
 
 import { useAthleteProfileStore } from '../../stores/athlete-profile-store'
+import { useRoleProfileStore } from '../../stores/role-profile-store'
 import { ACHIEVEMENTS_STORAGE_KEY, useAchievementsStore } from '../../stores/achievements-store'
 import { FIGURE_PROGRESS_STORAGE_KEY, useFigureProgressStore } from '../../stores/figure-progress-store'
 import { ROUTINES_STORAGE_KEY, useRoutinesStore } from '../../stores/routines-store'
@@ -12,6 +13,7 @@ import { SettingsPage } from './SettingsPage'
 beforeEach(() => {
   localStorage.clear()
   useAthleteProfileStore.setState({ profile: { name: 'Алина', birthDate: '2014-11-16', city: 'Казань', sportRank: 'дельфиник' } })
+  useRoleProfileStore.setState({ profile: null })
   useAchievementsStore.setState({ achievements: [], storageStatus: 'ready' })
   useFigureProgressStore.setState({ progress: [], storageStatus: 'ready' })
   useRoutinesStore.setState({ routines: [], storageStatus: 'ready' })
@@ -21,6 +23,9 @@ beforeEach(() => {
 it('updates athlete profile and links feedback to Pavel', async () => {
   render(<SettingsPage onBack={vi.fn()} />)
   expect(screen.queryByLabelText('Тема оформления')).not.toBeInTheDocument()
+  expect(screen.getByText('Роль на этом устройстве')).toBeVisible()
+  expect(screen.getByText(/Спортсменка\. Чтобы выбрать другую роль/)).toBeVisible()
+  expect(screen.getByRole('button', { name: 'Начать новый профиль' })).toBeVisible()
   expect(screen.queryByText('Алина')).not.toBeInTheDocument()
   expect(document.querySelector('.sinhronica-header')).toBeNull()
   expect(screen.getByRole('link', { name: 'Предложить доработку' })).toHaveAttribute('href', 'https://t.me/pavelnasuta')
@@ -30,6 +35,7 @@ it('updates athlete profile and links feedback to Pavel', async () => {
   await user.selectOptions(screen.getByLabelText('Спортивный разряд'), 'КМС')
   await user.click(screen.getByRole('button', { name: 'Сохранить профиль' }))
   expect(useAthleteProfileStore.getState().profile).toMatchObject({ name: 'Маша', sportRank: 'КМС' })
+  expect(useRoleProfileStore.getState().profile).toMatchObject({ role: 'athlete', profile: { name: 'Маша', sportRank: 'КМС' } })
   expect(screen.getByLabelText('Как тебя зовут?')).toHaveValue('Маша')
   expect(screen.getByLabelText('Спортивный разряд')).toHaveValue('КМС')
   expect(screen.getByRole('link', { name: 'Предложить доработку' })).toHaveAttribute('href', 'https://t.me/pavelnasuta')

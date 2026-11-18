@@ -13,6 +13,7 @@ import type { TrainingEntry } from '../features/training-diary/training-diary-ty
 import { parseStoredTrainingEntry, TRAINING_DIARY_STORAGE_KEY } from '../stores/training-diary-store'
 import { ACHIEVEMENTS_STORAGE_KEY, parseStoredAchievement } from '../stores/achievements-store'
 import { IDEAS_STORAGE_KEY } from '../stores/ideas-store'
+import { ROLE_PROFILE_STORAGE_KEY } from '../stores/role-profile-store'
 
 export type UserDataExport = {
   version: 5
@@ -69,6 +70,7 @@ export function restoreUserData(data: UserDataImport, targetStorage?: Pick<Stora
   }
   if (!storage) return false
   const writes: Array<[string, string | null]> = [
+    [ROLE_PROFILE_STORAGE_KEY, JSON.stringify({ version: 1, role: 'athlete', profile: data.profile })],
     [ATHLETE_PROFILE_STORAGE_KEY, JSON.stringify({ version: 2, profile: data.profile })],
     ['sinhronica:athlete-profile:v1', null],
     [IDEAS_STORAGE_KEY, serializeExportPayload(data.ideas)],

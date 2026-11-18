@@ -1,11 +1,18 @@
-import { render, screen } from '@testing-library/react'
+import { cleanup, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, expect, it } from 'vitest'
 
 import { useRoutinesStore } from '../../stores/routines-store'
 import { RoutinesPage } from './RoutinesPage'
 
-afterEach(() => { localStorage.clear(); useRoutinesStore.setState({ routines: [], storageStatus: 'ready' }) })
+afterEach(() => { cleanup(); localStorage.clear(); useRoutinesStore.setState({ routines: [], storageStatus: 'ready' }) })
+
+it('uses coach copy for a working routine card', () => {
+  render(<RoutinesPage audience="coach" />)
+  expect(screen.getByText('Тренерская работа')).toBeVisible()
+  expect(screen.getByRole('heading', { name: 'Карточка номера — в одном месте' })).toBeVisible()
+  expect(screen.getByText('Добавь состав, блоки, таймлайн и заметки для работы в бассейне.')).toBeVisible()
+})
 
 it('creates, opens, edits and deletes a local routine card', async () => {
   const user = userEvent.setup()

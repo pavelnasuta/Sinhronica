@@ -35,6 +35,7 @@ describe('user data export', () => {
 
     expect(restoreUserData(backup)).toBe(true)
     expect(JSON.parse(localStorage.getItem('sinhronica:training-diary:v1') ?? '[]')).toEqual([expect.objectContaining({ id: 'practice' })])
+    expect(JSON.parse(localStorage.getItem('sinhronica:role-profile:v1') ?? 'null')).toEqual(expect.objectContaining({ role: 'athlete', profile: expect.objectContaining({ name: 'Алина' }) }))
     expect(localStorage.getItem('sinhronica:preferences:v1')).toBe('dark')
     expect(localStorage.getItem('foreign')).toBe('keep')
   })
