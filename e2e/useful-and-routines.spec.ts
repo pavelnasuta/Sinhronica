@@ -41,6 +41,8 @@ test('opens the metronome from Useful and keeps its controls readable on a phone
   await page.getByRole('button', { name: /Метроном/i }).click()
 
   await expect(page.getByRole('heading', { name: 'Метроном' })).toBeVisible()
+  const backButtonBox = await page.getByRole('button', { name: 'К полезному' }).boundingBox()
+  expect(backButtonBox?.x).toBeGreaterThanOrEqual(16)
   await expect(page.getByLabel('Темп в ударах в минуту')).toHaveValue('100')
   await page.getByRole('button', { name: 'Увеличить темп' }).click()
   await expect(page.getByLabel('Темп в ударах в минуту')).toHaveValue('101')

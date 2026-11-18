@@ -69,8 +69,10 @@ export function MetronomePage({ onBack }: { onBack: () => void }) {
   }
 
   return (
-    <section className="mx-auto max-w-xl space-y-5" aria-labelledby="metronome-title">
-      <Button type="button" variant="ghost" className="-ml-3 gap-2" onClick={onBack}><ArrowLeft className="h-4 w-4" aria-hidden="true" />К полезному</Button>
+    <div className="sinhronica-settings-shell flex flex-col bg-background">
+      <main className="sinhronica-screen mx-auto w-full max-w-xl px-4 py-6 pb-[calc(6rem+env(safe-area-inset-bottom))] sm:px-6 sm:py-8">
+        <section className="space-y-5" aria-labelledby="metronome-title">
+      <Button type="button" variant="ghost" className="gap-2" onClick={onBack}><ArrowLeft className="h-4 w-4" aria-hidden="true" />К полезному</Button>
       <header className="space-y-2"><p className="text-xs font-extrabold uppercase tracking-[0.09em] text-[color:var(--eyebrow)]">Тренировочный ритм</p><h1 id="metronome-title" className="text-3xl font-extrabold tracking-[-0.04em]">Метроном</h1><p className="text-base leading-7 text-muted-foreground">Держи темп на суше, в хореографии и при разучивании счёта.</p></header>
 
       <article className="rounded-[var(--radius-xl)] border bg-card p-5 text-center shadow-[var(--shadow-card)]">
@@ -85,6 +87,8 @@ export function MetronomePage({ onBack }: { onBack: () => void }) {
 
       <section className="rounded-[var(--radius-xl)] border bg-card p-5 shadow-[var(--shadow-card)]"><div className="flex items-center gap-2"><TimerReset className="h-5 w-5 text-primary" aria-hidden="true" /><h2 className="text-lg font-extrabold">Быстрый темп</h2></div><div className="mt-4 grid grid-cols-4 gap-2">{PRESETS.map((preset) => <Button key={preset} type="button" variant={bpm === preset ? 'default' : 'outline'} className="h-12" onClick={() => changeBpm(preset)}>{preset}</Button>)}</div></section>
       <p className="px-2 text-center text-xs leading-5 text-muted-foreground">Звук включается только после нажатия «Запустить». Если устройство не даёт звук, счёт и подсветка продолжают работать на экране.</p>
-    </section>
+        </section>
+      </main>
+    </div>
   )
 }

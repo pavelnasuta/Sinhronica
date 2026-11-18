@@ -8,8 +8,10 @@ const oscillatorStart = vi.fn()
 const oscillatorStop = vi.fn()
 const gainConnect = vi.fn()
 const oscillatorConnect = vi.fn(() => ({ connect: gainConnect }))
-const createOscillator = vi.fn(() => ({ connect: oscillatorConnect, start: oscillatorStart, stop: oscillatorStop }))
-const createGain = vi.fn(() => ({ gain: { value: 1 } }))
+const createOscillator = vi.fn(() => ({ frequency: { value: 0 }, connect: oscillatorConnect, start: oscillatorStart, stop: oscillatorStop }))
+const gainSetValueAtTime = vi.fn()
+const gainRampToValueAtTime = vi.fn()
+const createGain = vi.fn(() => ({ gain: { value: 1, setValueAtTime: gainSetValueAtTime, exponentialRampToValueAtTime: gainRampToValueAtTime } }))
 
 class AudioContextStub {
   state = 'suspended' as AudioContextState
@@ -31,7 +33,7 @@ afterEach(() => {
   vi.clearAllMocks()
 })
 
-it('warms up Web Audio synchronously from a user gesture for iOS', () => {
+it('plays the first audible beat synchronously from a user gesture for iOS', () => {
   vi.stubGlobal('AudioContext', AudioContextStub)
   render(<AudioUnlockButton />)
 
@@ -39,6 +41,8 @@ it('warms up Web Audio synchronously from a user gesture for iOS', () => {
 
   expect(resume).toHaveBeenCalledTimes(1)
   expect(createOscillator).toHaveBeenCalledTimes(1)
-  expect(oscillatorStart).toHaveBeenCalledTimes(1)
-  expect(oscillatorStop).toHaveBeenCalledTimes(1)
+  expect(gainSetValueAtTime).toHaveBeenCalledWith(0.0001, 0)
+  expect(gainRampToValueAtTime).toHaveBeenCalledWith(0.22, 0.003)
+  expect(oscillatorStart).toHaveBeenCalledWith(0)
+  expect(oscillatorStop).toHaveBeenCalledWith(0.05)
 })

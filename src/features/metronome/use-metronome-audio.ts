@@ -13,8 +13,26 @@ type AudioContextWindow = Window & typeof globalThis & {
 const SCHEDULE_AHEAD_SECONDS = 0.12
 const SCHEDULER_INTERVAL_MS = 25
 
+type ScheduledBeat = {
+  time: number
+  beat: number
+}
+
+function playClick(context: AudioContext, time: number, accent: boolean): void {
+  const oscillator = context.createOscillator()
+  const gain = context.createGain()
+  oscillator.frequency.value = accent ? 1_200 : 800
+  gain.gain.setValueAtTime(0.0001, time)
+  gain.gain.exponentialRampToValueAtTime(accent ? 0.22 : 0.12, time + 0.003)
+  gain.gain.exponentialRampToValueAtTime(0.0001, time + 0.045)
+  oscillator.connect(gain).connect(context.destination)
+  oscillator.start(time)
+  oscillator.stop(time + 0.05)
+}
+
 export function useMetronomeAudio({ running, bpm, startedAt }: MetronomeAudioProps): () => void {
   const contextRef = useRef<AudioContext | null>(null)
+  const nextBeatRef = useRef<ScheduledBeat | null>(null)
 
   const getContext = useCallback(() => {
     if (contextRef.current) return contextRef.current
@@ -29,16 +47,13 @@ export function useMetronomeAudio({ running, bpm, startedAt }: MetronomeAudioPro
 
   const unlockAudio = useCallback(() => {
     const context = getContext()
-    if (!context || context.state === 'running') return
+    if (!context) return
 
-    void context.resume().catch(() => undefined)
-    const oscillator = context.createOscillator()
-    const gain = context.createGain()
-    gain.gain.value = 0.0001
-    oscillator.connect(gain).connect(context.destination)
-    oscillator.start()
-    oscillator.stop(context.currentTime + 0.01)
-  }, [getContext])
+    if (context.state !== 'running') void context.resume().catch(() => undefined)
+    const firstBeatAt = context.currentTime
+    playClick(context, firstBeatAt, true)
+    nextBeatRef.current = { time: firstBeatAt + 60 / bpm, beat: 1 }
+  }, [bpm, getContext])
 
   useEffect(() => () => {
     const context = contextRef.current
@@ -52,20 +67,10 @@ export function useMetronomeAudio({ running, bpm, startedAt }: MetronomeAudioPro
     const context = contextRef.current
     if (!context) return undefined
 
-    let nextBeatAt = context.currentTime
-    let beat = 0
-
-    const scheduleClick = (time: number, accent: boolean) => {
-      const oscillator = context.createOscillator()
-      const gain = context.createGain()
-      oscillator.frequency.value = accent ? 1_200 : 800
-      gain.gain.setValueAtTime(0.0001, time)
-      gain.gain.exponentialRampToValueAtTime(accent ? 0.22 : 0.12, time + 0.003)
-      gain.gain.exponentialRampToValueAtTime(0.0001, time + 0.045)
-      oscillator.connect(gain).connect(context.destination)
-      oscillator.start(time)
-      oscillator.stop(time + 0.05)
-    }
+    const scheduledBeat = nextBeatRef.current
+    nextBeatRef.current = null
+    let nextBeatAt = scheduledBeat?.time ?? context.currentTime
+    let beat = scheduledBeat?.beat ?? 0
 
     const resync = () => {
       nextBeatAt = context.currentTime
@@ -76,7 +81,7 @@ export function useMetronomeAudio({ running, bpm, startedAt }: MetronomeAudioPro
       if (context.state !== 'running') return
       if (nextBeatAt < context.currentTime - SCHEDULE_AHEAD_SECONDS) resync()
       while (nextBeatAt < context.currentTime + SCHEDULE_AHEAD_SECONDS) {
-        scheduleClick(nextBeatAt, beat === 0)
+        playClick(context, nextBeatAt, beat === 0)
         nextBeatAt += 60 / bpm
         beat = (beat + 1) % 4
       }
