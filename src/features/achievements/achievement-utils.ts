@@ -39,6 +39,7 @@ export function normalizeAchievementDraft(draft: AchievementDraft): AchievementD
     ...(draft.discipline === 'custom' ? { customDiscipline } : {}),
     score: Math.round(score * 1000) / 1000,
     medal: draft.medal,
+    ...(draft.childId ? { childId: draft.childId } : {}),
   }
 }
 

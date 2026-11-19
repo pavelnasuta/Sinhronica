@@ -46,6 +46,7 @@ export function parseStoredAchievement(value: unknown): Achievement | null {
     customDiscipline: typeof raw.customDiscipline === 'string' ? raw.customDiscipline : undefined,
     score: typeof raw.score === 'number' ? raw.score : Number.NaN,
     medal: typeof raw.medal === 'string' ? raw.medal as AchievementDraft['medal'] : 'none',
+    childId: raw.childId === 'child-1' || raw.childId === 'child-2' ? raw.childId : undefined,
   })
   return normalized ? { ...normalized, id: raw.id, createdAt: raw.createdAt, updatedAt: raw.updatedAt } : null
 }

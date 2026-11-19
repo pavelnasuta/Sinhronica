@@ -23,6 +23,8 @@ export const MEDAL_LABELS: Record<AchievementMedal, string> = {
   none: 'Без медали',
 }
 
+export type AchievementChildId = 'child-1' | 'child-2'
+
 export type AchievementDraft = {
   performedOn: string
   eventName: string
@@ -30,6 +32,7 @@ export type AchievementDraft = {
   customDiscipline?: string
   score: number
   medal: AchievementMedal
+  childId?: AchievementChildId
 }
 
 export type Achievement = AchievementDraft & {

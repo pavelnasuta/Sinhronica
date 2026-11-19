@@ -38,7 +38,7 @@ it('migrates an existing athlete to the role profile without sending them throug
 
   expect(screen.getByRole('heading', { name: 'Привет, Алина' })).toBeVisible()
   await waitFor(() => expect(JSON.parse(localStorage.getItem(ROLE_PROFILE_STORAGE_KEY) ?? 'null')).toEqual({
-    version: 1,
+    version: 2,
     role: 'athlete',
     profile: { name: 'Алина', birthDate: '2014-11-16', city: 'Казань', sportRank: 'дельфиник' },
   }))
@@ -46,11 +46,11 @@ it('migrates an existing athlete to the role profile without sending them throug
 
 it('opens a parent workspace with only parent navigation', async () => {
   const user = userEvent.setup()
-  useRoleProfileStore.setState({ profile: { role: 'parent', profile: { name: 'Елена', childName: 'Алина', childBirthDate: '2014-11-16', city: 'Казань' } } })
+  useRoleProfileStore.setState({ profile: { role: 'parent', profile: { name: 'Елена', city: 'Казань', children: [{ id: 'child-1', name: 'Алина', sportRank: 'Не указан' }] } } })
 
   render(<App />)
 
-  expect(screen.getByRole('heading', { name: 'Елена, всё для спорта ребёнка «Алина» — здесь' })).toBeVisible()
+  expect(screen.getByRole('heading', { name: 'Привет, Елена' })).toBeVisible()
   expect(screen.getAllByRole('link', { name: 'Бюджет' })).toHaveLength(2)
   expect(screen.getAllByRole('link', { name: 'Фигуры' })).toHaveLength(2)
   expect(screen.queryByRole('link', { name: 'Номера' })).not.toBeInTheDocument()

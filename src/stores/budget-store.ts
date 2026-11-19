@@ -18,7 +18,10 @@ export const BUDGET_CATEGORY_LABELS: Record<BudgetCategory, string> = {
   other: 'Прочее',
 }
 
-export type BudgetDraft = { spentOn: string; amount: number; category: BudgetCategory; comment: string }
+export type BudgetChildId = 'child-1' | 'child-2' | 'both'
+export const BUDGET_CHILD_IDS = ['child-1', 'child-2', 'both'] as const
+
+export type BudgetDraft = { spentOn: string; amount: number; category: BudgetCategory; comment: string; childId: BudgetChildId }
 export type BudgetEntry = BudgetDraft & { id: string; createdAt: string; updatedAt: string }
 
 type BudgetState = {
@@ -39,17 +42,23 @@ function getStorage(): SafeStorage {
 
 export function normalizeBudgetDraft(draft: BudgetDraft): BudgetDraft | null {
   const amount = Number(draft.amount)
-  if (!isValidBirthDate(draft.spentOn) || !Number.isFinite(amount) || amount <= 0 || amount > 10_000_000 || !BUDGET_CATEGORIES.includes(draft.category)) return null
+  if (!isValidBirthDate(draft.spentOn) || !Number.isFinite(amount) || amount <= 0 || amount > 10_000_000 || !BUDGET_CATEGORIES.includes(draft.category) || !BUDGET_CHILD_IDS.includes(draft.childId)) return null
   const comment = draft.comment.trim()
   if (comment.length > 500) return null
-  return { spentOn: draft.spentOn, amount: Math.round(amount * 100) / 100, category: draft.category, comment }
+  return { spentOn: draft.spentOn, amount: Math.round(amount * 100) / 100, category: draft.category, comment, childId: draft.childId }
 }
 
 export function parseStoredBudgetEntry(value: unknown): BudgetEntry | null {
   if (!value || typeof value !== 'object') return null
   const raw = value as Record<string, unknown>
   if (typeof raw.id !== 'string' || typeof raw.createdAt !== 'string' || typeof raw.updatedAt !== 'string' || Number.isNaN(Date.parse(raw.createdAt)) || Number.isNaN(Date.parse(raw.updatedAt))) return null
-  const draft = normalizeBudgetDraft({ spentOn: typeof raw.spentOn === 'string' ? raw.spentOn : '', amount: typeof raw.amount === 'number' ? raw.amount : Number.NaN, category: raw.category as BudgetCategory, comment: typeof raw.comment === 'string' ? raw.comment : '' })
+  const draft = normalizeBudgetDraft({
+    spentOn: typeof raw.spentOn === 'string' ? raw.spentOn : '',
+    amount: typeof raw.amount === 'number' ? raw.amount : Number.NaN,
+    category: raw.category as BudgetCategory,
+    comment: typeof raw.comment === 'string' ? raw.comment : '',
+    childId: typeof raw.childId === 'string' ? raw.childId as BudgetChildId : 'child-1',
+  })
   return draft ? { ...draft, id: raw.id, createdAt: raw.createdAt, updatedAt: raw.updatedAt } : null
 }
 

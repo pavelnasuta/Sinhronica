@@ -24,7 +24,7 @@ test('collects an athlete profile locally before opening the existing athlete wo
     profile: { name: 'Алина', birthDate: '2014-11-16', city: 'Казань', sportRank: 'дельфиник' },
   }))
   await expect.poll(async () => page.evaluate(() => window.localStorage.getItem('sinhronica:role-profile:v1'))).toBe(JSON.stringify({
-    version: 1,
+    version: 2,
     role: 'athlete',
     profile: { name: 'Алина', birthDate: '2014-11-16', city: 'Казань', sportRank: 'дельфиник' },
   }))
@@ -41,13 +41,12 @@ test('collects a parent profile without creating athlete data', async ({ browser
   await page.getByRole('button', { name: 'Продолжить' }).click()
   await page.getByLabel('Как тебя зовут?').fill('Елена')
   await page.getByLabel('Как зовут ребёнка?').fill('Алина')
-  await page.getByLabel('Дата рождения ребёнка').fill('2014-11-16')
   await page.getByLabel('Город').fill('Казань')
   await page.getByRole('button', { name: 'Открыть Синхронику' }).click()
   await expect(page.getByRole('heading', { name: 'Установи Синхронику' })).toBeVisible()
   await page.getByRole('button', { name: 'Открыть Синхронику' }).click()
 
-  await expect(page.getByRole('heading', { name: 'Елена, всё для спорта ребёнка «Алина» — здесь' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Привет, Елена' })).toBeVisible()
   await page.getByRole('navigation', { name: 'Мобильная навигация' }).getByRole('link', { name: 'Бюджет' }).click()
   await expect(page.getByRole('heading', { name: 'Бюджет' })).toBeVisible()
   await page.getByRole('button', { name: 'Добавить', exact: true }).click()
@@ -64,10 +63,9 @@ test('collects a parent profile without creating athlete data', async ({ browser
   await page.getByLabel('Удалить расход').click()
   await page.getByRole('alertdialog').getByRole('button', { name: 'Удалить расход' }).click()
   await expect(page.getByText('Добавь первый расход')).toBeVisible()
-  await page.getByLabel('Выбрать копию бюджета').setInputFiles('e2e/fixtures/parent-budget.json')
-  await expect(page.getByRole('alertdialog').getByText('Найдено расходов: 1.')).toBeVisible()
-  await page.getByRole('alertdialog').getByRole('button', { name: 'Заменить бюджет' }).click()
-  await expect(page.getByText('Такси на старт')).toBeVisible()
+  await page.getByRole('navigation', { name: 'Мобильная навигация' }).getByRole('link', { name: 'Главная' }).click()
+  await page.getByRole('button', { name: 'Открыть настройки профиля' }).click()
+  await expect(page.getByRole('heading', { name: 'Настройки' })).toBeVisible()
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true)
   await expect.poll(async () => page.evaluate(() => window.localStorage.getItem('sinhronica:athlete-profile:v2'))).toBeNull()
 

@@ -4,12 +4,14 @@ import { Button } from '../../components/ui/button'
 import { Input } from '../../components/ui/input'
 import { Label } from '../../components/ui/label'
 import { DISCIPLINES, DISCIPLINE_LABELS, MEDALS, MEDAL_LABELS, type Achievement, type AchievementDraft } from './achievement-types'
+import type { ParentChild } from '../../stores/role-profile-store'
 import { isValidPerformanceDate, normalizeAchievementDraft } from './achievement-utils'
 
 type AchievementFormProps = {
   initialValue?: Achievement
   onSubmit: (draft: AchievementDraft) => void
   onCancel: () => void
+  parentChildren?: ParentChild[]
 }
 
 function today(): string {
@@ -17,7 +19,7 @@ function today(): string {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
 }
 
-function initialDraft(value?: Achievement): AchievementDraft {
+function initialDraft(value?: Achievement, parentChildren?: ParentChild[]): AchievementDraft {
   return value ? {
     performedOn: value.performedOn,
     eventName: value.eventName,
@@ -25,11 +27,12 @@ function initialDraft(value?: Achievement): AchievementDraft {
     customDiscipline: value.customDiscipline,
     score: value.score,
     medal: value.medal,
-  } : { performedOn: today(), eventName: '', discipline: 'figures', score: Number.NaN, medal: 'none' }
+    childId: value.childId ?? (parentChildren?.[0]?.id as AchievementDraft['childId']),
+  } : { performedOn: today(), eventName: '', discipline: 'figures', score: Number.NaN, medal: 'none', childId: parentChildren?.[0]?.id as AchievementDraft['childId'] }
 }
 
-export function AchievementForm({ initialValue, onSubmit, onCancel }: AchievementFormProps) {
-  const [draft, setDraft] = useState<AchievementDraft>(() => initialDraft(initialValue))
+export function AchievementForm({ initialValue, onSubmit, onCancel, parentChildren }: AchievementFormProps) {
+  const [draft, setDraft] = useState<AchievementDraft>(() => initialDraft(initialValue, parentChildren))
   const [scoreInput, setScoreInput] = useState(() => initialValue ? String(initialValue.score) : '')
   const [error, setError] = useState('')
   const update = <Key extends keyof AchievementDraft>(key: Key, value: AchievementDraft[Key]) => setDraft((current) => ({ ...current, [key]: value }))
@@ -45,6 +48,7 @@ export function AchievementForm({ initialValue, onSubmit, onCancel }: Achievemen
   }
 
   return <form className="grid gap-4" onSubmit={submit}>
+    {parentChildren?.length ? <div className="grid gap-2"><Label htmlFor="achievement-child">Для ребёнка</Label><select id="achievement-child" className="h-11 rounded-md border bg-background px-3" value={draft.childId ?? parentChildren[0].id} onChange={(event) => update('childId', event.target.value as AchievementDraft['childId'])}>{parentChildren.map((child) => <option key={child.id} value={child.id}>{child.name}</option>)}</select></div> : null}
     <div className="grid gap-2"><Label htmlFor="achievement-date">Дата проведения</Label><Input id="achievement-date" type="date" max={today()} value={draft.performedOn} onChange={(event) => update('performedOn', event.target.value)} /></div>
     <div className="grid gap-2"><Label htmlFor="achievement-event">Соревнование или событие</Label><Input id="achievement-event" value={draft.eventName} placeholder="Например, Кубок Федерации" onChange={(event) => update('eventName', event.target.value)} /></div>
     <div className="grid gap-2"><Label htmlFor="achievement-discipline">Дисциплина</Label><select id="achievement-discipline" className="h-11 rounded-md border bg-background px-3" value={draft.discipline} onChange={(event) => update('discipline', event.target.value as AchievementDraft['discipline'])}>{DISCIPLINES.map((discipline) => <option key={discipline} value={discipline}>{DISCIPLINE_LABELS[discipline]}</option>)}</select></div>

@@ -120,12 +120,16 @@ export function App() {
   if (showInstallGuide) return <><OfflineStatus /><PostProfileInstallGuide onFinish={() => setShowInstallGuide(false)} /><PwaUpdateNotice /><Toaster richColors position="top-center" closeButton /></>
   if (activeRoleProfile.role !== 'athlete') {
     const roleRoutes = activeRoleProfile.role === 'parent' ? parentRoutes : coachRoutes
-    const roleRoute = roleRoutes.some((route) => route.name === activeRoute) ? activeRoute : 'home'
+    const roleRoute = (activeRoleProfile.role === 'parent' && activeRoute === 'settings') || roleRoutes.some((route) => route.name === activeRoute) ? activeRoute : 'home'
     const page = roleRoute === 'figures'
       ? <FiguresCatalogPage onBack={() => navigate('home')} backLabel="К главной" audience={activeRoleProfile.role} />
       : roleRoute === 'routines'
         ? <RoutinesPage audience="coach" />
-        : roleRoute === 'useful'
+        : roleRoute === 'settings' && activeRoleProfile.role === 'parent'
+          ? <SettingsPage onBack={() => navigate('home')} />
+          : roleRoute === 'achievements' && activeRoleProfile.role === 'parent'
+            ? <AchievementsPage parentChildren={activeRoleProfile.profile.children} />
+            : roleRoute === 'useful'
           ? <UsefulPage onNavigate={navigate} />
           : roleRoute === 'budget'
             ? <BudgetPage />

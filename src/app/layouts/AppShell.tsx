@@ -34,7 +34,7 @@ export function AppShell({ activeRoute, onNavigate, children, routes = appRoutes
       </main>
       <footer className="hidden border-t px-4 py-4 text-center text-sm text-muted-foreground sm:block sm:px-6">Локальное приложение без сервера и внешнего трекинга.</footer>
       <nav className="sinhronica-mobile-nav fixed inset-x-0 bottom-0 z-50 border-t px-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-2 shadow-[0_-8px_24px_rgb(1_7_37_/_0.2)] backdrop-blur sm:hidden" aria-label="Мобильная навигация">
-        <div className="mx-auto grid max-w-md grid-cols-4 gap-1">
+        <div className="mx-auto grid max-w-md gap-1" style={{ gridTemplateColumns: `repeat(${routes.length}, minmax(0, 1fr))` }}>
           {routes.map((route) => {
             const Icon = routeIcons[route.name]
             const isActive = activeRoute === route.name
