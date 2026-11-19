@@ -8,6 +8,7 @@ import { ACHIEVEMENTS_STORAGE_KEY, useAchievementsStore } from '../../stores/ach
 import { FIGURE_PROGRESS_STORAGE_KEY, useFigureProgressStore } from '../../stores/figure-progress-store'
 import { ROUTINES_STORAGE_KEY, useRoutinesStore } from '../../stores/routines-store'
 import { TRAINING_DIARY_STORAGE_KEY, useTrainingDiaryStore } from '../../stores/training-diary-store'
+import { BUDGET_STORAGE_KEY, useBudgetStore } from '../../stores/budget-store'
 import { SettingsPage } from './SettingsPage'
 
 beforeEach(() => {
@@ -30,6 +31,30 @@ it('renders the same sharing card for a parent profile', () => {
   expect(screen.getByRole('heading', { name: 'Поделиться Синхроникой' })).toBeVisible()
   expect(screen.getByRole('button', { name: 'Поделиться приложением с друзьями' })).toBeVisible()
   expect(screen.getByRole('presentation')).toHaveAttribute('src', expect.stringContaining('onboarding/practice.webp'))
+  expect(screen.getByRole('heading', { name: 'Авторы' })).toBeVisible()
+  expect(screen.getByRole('link', { name: 'Предложить доработку' })).toHaveAttribute('href', 'https://t.me/pavelnasuta')
+})
+
+it('confirms deletion of only parent profile data including budget and achievements', async () => {
+  const user = userEvent.setup()
+  const parent = { role: 'parent' as const, profile: { name: 'Елена', city: 'Казань', children: [{ id: 'child-1' as const, name: 'Алина', sportRank: 'дельфиник' as const }] } }
+  useRoleProfileStore.setState({ profile: parent })
+  useBudgetStore.setState({ entries: [{ id: 'budget', spentOn: '2026-11-10', amount: 500, category: 'training', comment: '', childId: 'child-1', createdAt: '2026-11-10T00:00:00.000Z', updatedAt: '2026-11-10T00:00:00.000Z' }], storageStatus: 'ready' })
+  useAchievementsStore.setState({ achievements: [{ id: 'achievement', performedOn: '2026-11-10', eventName: 'Старт', discipline: 'solo', score: 8, medal: 'gold', childId: 'child-1', createdAt: '2026-11-10T00:00:00.000Z', updatedAt: '2026-11-10T00:00:00.000Z' }], storageStatus: 'ready' })
+  localStorage.setItem(BUDGET_STORAGE_KEY, JSON.stringify(useBudgetStore.getState().entries))
+  localStorage.setItem(ACHIEVEMENTS_STORAGE_KEY, JSON.stringify(useAchievementsStore.getState().achievements))
+
+  render(<SettingsPage onBack={vi.fn()} />)
+  await user.click(screen.getByRole('button', { name: 'Удалить профиль семьи' }))
+  expect(screen.getByRole('alertdialog')).toHaveTextContent('Удалить профиль семьи?')
+  await user.click(screen.getByRole('button', { name: 'Удалить данные семьи' }))
+
+  expect(useRoleProfileStore.getState().profile).toBeNull()
+  expect(useBudgetStore.getState().entries).toEqual([])
+  expect(useAchievementsStore.getState().achievements).toEqual([])
+  expect(localStorage.getItem(BUDGET_STORAGE_KEY)).toBeNull()
+  expect(localStorage.getItem(ACHIEVEMENTS_STORAGE_KEY)).toBeNull()
+  expect(useAthleteProfileStore.getState().profile).toMatchObject({ name: 'Алина' })
 })
 
 it('updates athlete profile and links feedback to Pavel', async () => {

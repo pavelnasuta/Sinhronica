@@ -56,3 +56,26 @@ test('keeps achievement navigation readable without horizontal overflow on narro
     expect(layout.mascotFit).toBe('contain')
   }
 })
+
+test('keeps parent achievements and useful tools inside 360 and 390 pixel viewports', async ({ page }) => {
+  await page.addInitScript(() => {
+    window.localStorage.clear()
+    window.localStorage.setItem('sinhronica:role-profile:v1', JSON.stringify({ version: 3, role: 'parent', profile: { name: 'Елена', city: 'Казань', children: [{ id: 'child-1', name: 'Алина', sportRank: 'КМС' }] } }))
+    window.localStorage.setItem('sinhronica:achievements:v1', JSON.stringify([{ id: 'alina', performedOn: '2026-11-10', eventName: 'Кубок', discipline: 'solo', score: 8.5, medal: 'gold', childId: 'child-1', createdAt: '2026-11-10T00:00:00.000Z', updatedAt: '2026-11-10T00:00:00.000Z' }]))
+  })
+
+  for (const viewport of [{ width: 360, height: 800 }, { width: 390, height: 844 }]) {
+    await page.setViewportSize(viewport)
+    await page.goto('/starter-kit/#achievements')
+    await expect(page.getByRole('heading', { name: 'Достижения' })).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Фильтры достижений' })).toHaveAttribute('aria-expanded', 'false')
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true)
+
+    await page.goto('/starter-kit/#useful')
+    await page.getByRole('button', { name: /Калькулятор баллов/i }).click()
+    await expect(page.getByRole('heading', { name: 'Калькулятор баллов' })).toBeVisible()
+    await page.getByRole('button', { name: 'К полезному' }).click()
+    await expect(page.getByRole('heading', { name: 'Полезное' })).toBeVisible()
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true)
+  }
+})

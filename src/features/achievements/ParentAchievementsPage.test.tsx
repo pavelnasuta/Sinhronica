@@ -28,7 +28,8 @@ it('filters parent achievements by child and assigns a child on create', async (
   const user = userEvent.setup()
   render(<AchievementsPage parentChildren={parentChildren} />)
 
-  expect(screen.getByRole('heading', { name: 'Достижения детей' })).toBeVisible()
+  expect(screen.getByRole('heading', { name: 'Достижения' })).toBeVisible()
+  await user.click(screen.getByRole('button', { name: 'Фильтры достижений' }))
   await user.selectOptions(screen.getByLabelText('Ребёнок'), 'child-2')
   expect(screen.getByText('Кубок Маши')).toBeVisible()
   expect(screen.queryByText('Кубок Алины')).not.toBeInTheDocument()
@@ -41,6 +42,21 @@ it('filters parent achievements by child and assigns a child on create', async (
   await user.click(screen.getByRole('button', { name: 'Сохранить достижение' }))
 
   expect(useAchievementsStore.getState().achievements.at(-1)).toMatchObject({ eventName: 'Старт Маши', childId: 'child-2' })
+})
+
+it('uses the parent achievements title and compact filters without the results eyebrow', async () => {
+  const user = userEvent.setup()
+  render(<AchievementsPage parentChildren={parentChildren} />)
+
+  expect(screen.getByRole('heading', { name: 'Достижения' })).toBeVisible()
+  expect(screen.queryByText('Результаты детей')).not.toBeInTheDocument()
+  expect(screen.getByRole('button', { name: 'Фильтры достижений' })).toHaveAttribute('aria-expanded', 'false')
+
+  await user.click(screen.getByRole('button', { name: 'Фильтры достижений' }))
+  await user.selectOptions(screen.getByLabelText('Ребёнок'), 'child-2')
+
+  expect(screen.getByText('Кубок Маши')).toBeVisible()
+  expect(screen.queryByText('Кубок Алины')).not.toBeInTheDocument()
 })
 
 it('shows each child name on a parent card and awards a selected rank to that child', async () => {
@@ -56,6 +72,7 @@ it('shows each child name on a parent card and awards a selected rank to that ch
   await user.selectOptions(screen.getByLabelText('Получен новый разряд'), 'КМС')
   await user.click(screen.getByRole('button', { name: 'Сохранить достижение' }))
 
+  expect(screen.getByText('Новый разряд · КМС')).toBeVisible()
   expect(useRoleProfileStore.getState().profile).toMatchObject({ role: 'parent', profile: { children: [
     { id: 'child-1', sportRank: 'КМС' },
     { id: 'child-2', sportRank: 'КМС' },

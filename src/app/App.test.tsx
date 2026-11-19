@@ -45,7 +45,6 @@ it('migrates an existing athlete to the role profile without sending them throug
 })
 
 it('opens a parent workspace with only parent navigation', async () => {
-  const user = userEvent.setup()
   useRoleProfileStore.setState({ profile: { role: 'parent', profile: { name: 'Елена', city: 'Казань', children: [{ id: 'child-1', name: 'Алина', sportRank: 'Не указан' }] } } })
 
   render(<App />)
@@ -54,9 +53,36 @@ it('opens a parent workspace with only parent navigation', async () => {
   expect(screen.getAllByRole('link', { name: 'Бюджет' })).toHaveLength(2)
   expect(screen.queryAllByRole('link', { name: 'Фигуры' })).toHaveLength(0)
   expect(screen.queryByRole('link', { name: 'Номера' })).not.toBeInTheDocument()
-  await user.click(screen.getByRole('button', { name: 'Начать новый профиль' }))
-  await user.click(screen.getByRole('button', { name: 'Удалить и начать заново' }))
-  expect(screen.getByRole('heading', { name: 'Кто будет пользоваться Синхроникой?' })).toBeVisible()
+  expect(screen.queryByRole('button', { name: 'Начать новый профиль' })).not.toBeInTheDocument()
+  expect(screen.getByText('Алина · Не указан')).toBeVisible()
+})
+
+it('routes a parent through every useful tool and returns each tool to Useful', async () => {
+  const user = userEvent.setup()
+  useRoleProfileStore.setState({ profile: { role: 'parent', profile: { name: 'Елена', city: 'Казань', children: [{ id: 'child-1', name: 'Алина', sportRank: 'Не указан' }] } } })
+  window.location.hash = 'useful'
+
+  render(<App />)
+
+  await user.click(screen.getByRole('button', { name: /Калькулятор баллов/i }))
+  expect(screen.getByRole('heading', { name: 'Калькулятор баллов' })).toBeVisible()
+  await user.click(screen.getByRole('button', { name: 'К полезному' }))
+  expect(screen.getByRole('heading', { name: 'Полезное' })).toBeVisible()
+
+  await user.click(screen.getByRole('button', { name: /Каталог фигур/i }))
+  expect(screen.getByRole('heading', { name: 'Каталог фигур' })).toBeVisible()
+  await user.click(screen.getByRole('button', { name: 'К полезному' }))
+  expect(screen.getByRole('heading', { name: 'Полезное' })).toBeVisible()
+
+  await user.click(screen.getByRole('button', { name: /Метроном/i }))
+  expect(screen.getByRole('heading', { name: 'Метроном' })).toBeVisible()
+  await user.click(screen.getByRole('button', { name: 'К полезному' }))
+  expect(screen.getByRole('heading', { name: 'Полезное' })).toBeVisible()
+
+  await user.click(screen.getByRole('button', { name: /Квадратное дыхание/i }))
+  expect(screen.getByRole('heading', { name: 'Квадратное дыхание' })).toBeVisible()
+  await user.click(screen.getByRole('button', { name: 'К полезному' }))
+  expect(screen.getByRole('heading', { name: 'Полезное' })).toBeVisible()
 })
 
 it('opens a coach workspace without athlete diary or parent budget', async () => {

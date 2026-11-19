@@ -26,6 +26,7 @@ it('filters parent expenses by child and category and recalculates summaries', a
   const user = userEvent.setup()
   render(<BudgetPage />)
 
+  expect(screen.queryByText('Семейные финансы')).not.toBeInTheDocument()
   expect(screen.getByRole('button', { name: 'Фильтры расходов' })).toHaveAttribute('aria-expanded', 'false')
   await user.click(screen.getByRole('button', { name: 'Фильтры расходов' }))
   expect(screen.getByLabelText('Ребёнок')).toBeVisible()

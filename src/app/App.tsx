@@ -120,20 +120,29 @@ export function App() {
   if (showInstallGuide) return <><OfflineStatus /><PostProfileInstallGuide onFinish={() => setShowInstallGuide(false)} /><PwaUpdateNotice /><Toaster richColors position="top-center" closeButton /></>
   if (activeRoleProfile.role !== 'athlete') {
     const roleRoutes = activeRoleProfile.role === 'parent' ? parentRoutes : coachRoutes
-    const roleRoute = (activeRoleProfile.role === 'parent' && activeRoute === 'settings') || roleRoutes.some((route) => route.name === activeRoute) ? activeRoute : 'home'
+    const parentToolRoutes: RouteName[] = ['settings', 'figures', 'figures-catalog', 'figures-calculator', 'metronome', 'box-breathing']
+    const roleRoute = roleRoutes.some((route) => route.name === activeRoute) || (activeRoleProfile.role === 'parent' && parentToolRoutes.includes(activeRoute)) ? activeRoute : 'home'
     const page = roleRoute === 'figures'
       ? <FiguresCatalogPage onBack={() => navigate('home')} backLabel="К главной" audience={activeRoleProfile.role} />
-      : roleRoute === 'routines'
-        ? <RoutinesPage audience="coach" />
-        : roleRoute === 'settings' && activeRoleProfile.role === 'parent'
-          ? <SettingsPage onBack={() => navigate('home')} />
-          : roleRoute === 'achievements' && activeRoleProfile.role === 'parent'
-            ? <AchievementsPage parentChildren={activeRoleProfile.profile.children} />
-            : roleRoute === 'useful'
-          ? <UsefulPage onNavigate={navigate} />
-          : roleRoute === 'budget'
-            ? <BudgetPage />
-            : <RoleReadyPage roleProfile={activeRoleProfile} onNavigate={navigate} />
+      : roleRoute === 'figures-catalog' && activeRoleProfile.role === 'parent'
+        ? <FiguresCatalogPage onBack={() => navigate('useful')} audience="parent" />
+        : roleRoute === 'figures-calculator' && activeRoleProfile.role === 'parent'
+          ? <FiguresCalculatorPage onBack={() => navigate('useful')} />
+          : roleRoute === 'metronome' && activeRoleProfile.role === 'parent'
+            ? <MetronomePage onBack={() => navigate('useful')} />
+            : roleRoute === 'box-breathing' && activeRoleProfile.role === 'parent'
+              ? <BoxBreathingPage onBack={() => navigate('useful')} />
+              : roleRoute === 'routines'
+                ? <RoutinesPage audience="coach" />
+                : roleRoute === 'settings' && activeRoleProfile.role === 'parent'
+                  ? <SettingsPage onBack={() => navigate('home')} />
+                  : roleRoute === 'achievements' && activeRoleProfile.role === 'parent'
+                    ? <AchievementsPage parentChildren={activeRoleProfile.profile.children} />
+                    : roleRoute === 'useful'
+                      ? <UsefulPage onNavigate={navigate} />
+                      : roleRoute === 'budget'
+                        ? <BudgetPage />
+                        : <RoleReadyPage roleProfile={activeRoleProfile} onNavigate={navigate} />
 
     return <><OfflineStatus /><PwaInstallPrompt /><AppShell activeRoute={roleRoute} onNavigate={navigate} routes={roleRoutes}>{page}</AppShell><PwaUpdateNotice /><Toaster richColors position="top-center" closeButton /></>
   }
