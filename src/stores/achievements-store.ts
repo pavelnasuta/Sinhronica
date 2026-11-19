@@ -3,6 +3,9 @@ import { create } from 'zustand'
 import { createSafeStorage, type SafeStorage } from '../lib/browser-storage'
 import type { Achievement, AchievementDraft } from '../features/achievements/achievement-types'
 import { normalizeAchievementDraft } from '../features/achievements/achievement-utils'
+import { useAthleteProfileStore } from './athlete-profile-store'
+import { useRoleProfileStore } from './role-profile-store'
+import { highestSportRank } from './sport-ranks'
 import type { StorageStatus } from './ideas-store'
 
 export const ACHIEVEMENTS_STORAGE_KEY = 'sinhronica:achievements:v1'
@@ -69,6 +72,18 @@ function persist(set: (state: Partial<AchievementsState>) => void, achievements:
   set({ achievements, storageStatus: wasSaved ? 'ready' : 'unsaved' })
 }
 
+function syncAwardedRanks(achievements: Achievement[]) {
+  const roleProfile = useRoleProfileStore.getState().profile
+  if (roleProfile?.role === 'parent') {
+    roleProfile.profile.children.forEach((child) => {
+      const rank = highestSportRank(achievements.filter((achievement) => (achievement.childId ?? 'child-1') === child.id).map((achievement) => achievement.awardedRank))
+      useRoleProfileStore.getState().syncChildAwardRank(child.id, rank)
+    })
+    return
+  }
+  useAthleteProfileStore.getState().syncAwardRank(highestSportRank(achievements.map((achievement) => achievement.awardedRank)))
+}
+
 export const useAchievementsStore = create<AchievementsState>((set, get) => ({
   achievements: [],
   storageStatus: 'ready',
@@ -77,19 +92,28 @@ export const useAchievementsStore = create<AchievementsState>((set, get) => ({
     if (!normalized) return null
     const timestamp = new Date().toISOString()
     const achievement: Achievement = { ...normalized, id: crypto.randomUUID(), createdAt: timestamp, updatedAt: timestamp }
-    persist(set, [...get().achievements, achievement])
+    const achievements = [...get().achievements, achievement]
+    persist(set, achievements)
+    syncAwardedRanks(achievements)
     return achievement
   },
   update: (id, draft) => {
     const normalized = normalizeAchievementDraft(draft)
     if (!normalized) return
     const timestamp = new Date().toISOString()
-    persist(set, get().achievements.map((achievement) => achievement.id === id ? { ...achievement, ...normalized, updatedAt: timestamp } : achievement))
+    const achievements = get().achievements.map((achievement) => achievement.id === id ? { ...achievement, ...normalized, updatedAt: timestamp } : achievement)
+    persist(set, achievements)
+    syncAwardedRanks(achievements)
   },
-  remove: (id) => persist(set, get().achievements.filter((achievement) => achievement.id !== id)),
+  remove: (id) => {
+    const achievements = get().achievements.filter((achievement) => achievement.id !== id)
+    persist(set, achievements)
+    syncAwardedRanks(achievements)
+  },
   clear: () => {
     storage.removeItem(ACHIEVEMENTS_STORAGE_KEY)
     set({ achievements: [], storageStatus: 'ready' })
+    syncAwardedRanks([])
   },
   hydrate: () => {
     if (get().storageStatus === 'unsaved') return

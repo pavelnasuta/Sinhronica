@@ -4,6 +4,7 @@ import { Button } from '../../components/ui/button'
 import { Input } from '../../components/ui/input'
 import { Label } from '../../components/ui/label'
 import { DISCIPLINES, DISCIPLINE_LABELS, MEDALS, MEDAL_LABELS, type Achievement, type AchievementDraft } from './achievement-types'
+import { SPORT_RANKS } from '../../stores/sport-ranks'
 import type { ParentChild } from '../../stores/role-profile-store'
 import { isValidPerformanceDate, normalizeAchievementDraft } from './achievement-utils'
 
@@ -27,8 +28,9 @@ function initialDraft(value?: Achievement, parentChildren?: ParentChild[]): Achi
     customDiscipline: value.customDiscipline,
     score: value.score,
     medal: value.medal,
+    awardedRank: value.awardedRank,
     childId: value.childId ?? (parentChildren?.[0]?.id as AchievementDraft['childId']),
-  } : { performedOn: today(), eventName: '', discipline: 'figures', score: Number.NaN, medal: 'none', childId: parentChildren?.[0]?.id as AchievementDraft['childId'] }
+  } : { performedOn: today(), eventName: '', discipline: 'figures', score: Number.NaN, medal: 'none', awardedRank: undefined, childId: parentChildren?.[0]?.id as AchievementDraft['childId'] }
 }
 
 export function AchievementForm({ initialValue, onSubmit, onCancel, parentChildren }: AchievementFormProps) {
@@ -55,6 +57,7 @@ export function AchievementForm({ initialValue, onSubmit, onCancel, parentChildr
     {draft.discipline === 'custom' ? <div className="grid gap-2"><Label htmlFor="achievement-custom-discipline">Своя дисциплина</Label><Input id="achievement-custom-discipline" value={draft.customDiscipline ?? ''} onChange={(event) => update('customDiscipline', event.target.value)} /></div> : null}
     <div className="grid gap-2"><Label htmlFor="achievement-score">Балл</Label><Input id="achievement-score" type="text" inputMode="decimal" value={scoreInput} onChange={(event) => setScoreInput(event.target.value)} /></div>
     <div className="grid gap-2"><Label htmlFor="achievement-medal">Медаль</Label><select id="achievement-medal" className="h-11 rounded-md border bg-background px-3" value={draft.medal} onChange={(event) => update('medal', event.target.value as AchievementDraft['medal'])}>{MEDALS.map((medal) => <option key={medal} value={medal}>{MEDAL_LABELS[medal]}</option>)}</select></div>
+    <div className="grid gap-2"><Label htmlFor="achievement-rank">Получен новый разряд</Label><select id="achievement-rank" className="h-11 rounded-md border bg-background px-3" value={draft.awardedRank ?? ''} onChange={(event) => update('awardedRank', (event.target.value || undefined) as AchievementDraft['awardedRank'])}><option value="">Не отмечать</option>{SPORT_RANKS.map((rank) => <option key={rank} value={rank}>{rank}</option>)}</select></div>
     {error ? <p role="alert" className="text-sm text-destructive">{error}</p> : null}
     <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end"><Button type="button" variant="outline" onClick={onCancel}>Отмена</Button><Button type="submit">Сохранить достижение</Button></div>
   </form>

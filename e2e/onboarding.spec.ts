@@ -19,12 +19,12 @@ test('collects an athlete profile locally before opening the existing athlete wo
   await page.getByRole('button', { name: 'Открыть Синхронику' }).click()
 
   await expect(page.getByRole('heading', { name: 'Привет, Алина' })).toBeVisible()
-  await expect.poll(async () => page.evaluate(() => window.localStorage.getItem('sinhronica:athlete-profile:v2'))).toBe(JSON.stringify({
-    version: 2,
-    profile: { name: 'Алина', birthDate: '2014-11-16', city: 'Казань', sportRank: 'дельфиник' },
+  await expect.poll(async () => page.evaluate(() => window.localStorage.getItem('sinhronica:athlete-profile:v3'))).toBe(JSON.stringify({
+    version: 3,
+    profile: { name: 'Алина', birthDate: '2014-11-16', city: 'Казань', sportRank: 'дельфиник', manualSportRank: 'дельфиник' },
   }))
   await expect.poll(async () => page.evaluate(() => window.localStorage.getItem('sinhronica:role-profile:v1'))).toBe(JSON.stringify({
-    version: 2,
+    version: 3,
     role: 'athlete',
     profile: { name: 'Алина', birthDate: '2014-11-16', city: 'Казань', sportRank: 'дельфиник' },
   }))
@@ -49,7 +49,7 @@ test('collects a parent profile without creating athlete data', async ({ browser
   await expect(page.getByRole('heading', { name: 'Привет, Елена' })).toBeVisible()
   await page.getByRole('navigation', { name: 'Мобильная навигация' }).getByRole('link', { name: 'Бюджет' }).click()
   await expect(page.getByRole('heading', { name: 'Бюджет' })).toBeVisible()
-  await page.getByRole('button', { name: 'Добавить', exact: true }).click()
+  await page.getByRole('button', { name: 'Расход', exact: true }).click()
   await page.getByLabel('Дата').fill('2026-11-18')
   await page.getByLabel('Сумма').fill('3500')
   await page.getByLabel('Комментарий').fill('Абонемент')
@@ -67,7 +67,7 @@ test('collects a parent profile without creating athlete data', async ({ browser
   await page.getByRole('button', { name: 'Открыть настройки профиля' }).click()
   await expect(page.getByRole('heading', { name: 'Настройки' })).toBeVisible()
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true)
-  await expect.poll(async () => page.evaluate(() => window.localStorage.getItem('sinhronica:athlete-profile:v2'))).toBeNull()
+  await expect.poll(async () => page.evaluate(() => window.localStorage.getItem('sinhronica:athlete-profile:v3'))).toBeNull()
 
   await context.close()
 })

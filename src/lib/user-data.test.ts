@@ -13,7 +13,7 @@ describe('user data export', () => {
     const trainingDiary: TrainingEntry[] = [{ id: 'practice', performedOn: '2026-11-16', types: ['water'], mood: 'good', createdAt: '2026-11-16T00:00:00.000Z', updatedAt: '2026-11-16T00:00:00.000Z' }]
     const payload = JSON.parse(serializeUserData({ profile, ideas: [], achievements: [achievement], figureProgress, routines, trainingDiary, theme: 'dark' }))
 
-    expect(payload).toMatchObject({ version: 5, profile, ideas: [], achievements: [achievement], figureProgress, routines, trainingDiary, preferences: { theme: 'dark' } })
+    expect(payload).toMatchObject({ version: 6, profile, ideas: [], achievements: [achievement], figureProgress, routines, trainingDiary, preferences: { theme: 'dark' } })
     expect(payload).toHaveProperty('exportedAt')
     expect(payload).not.toHaveProperty('other-product:key')
   })

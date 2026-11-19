@@ -42,8 +42,8 @@ describe('athlete profile store', () => {
     const profile = { name: 'Алина', birthDate: '2014-11-16', city: 'Казань', sportRank: 'дельфиник' as const }
 
     expect(useAthleteProfileStore.getState().save(profile)).toBe(true)
-    expect(useAthleteProfileStore.getState().profile).toEqual(profile)
-    expect(JSON.parse(window.localStorage.getItem(STORAGE_KEY) ?? 'null')).toEqual({ version: 2, profile })
+    expect(useAthleteProfileStore.getState().profile).toEqual({ ...profile, manualSportRank: 'дельфиник' })
+    expect(JSON.parse(window.localStorage.getItem(STORAGE_KEY) ?? 'null')).toEqual({ version: 3, profile: { ...profile, manualSportRank: 'дельфиник' } })
     expect(window.localStorage.getItem('sinhronica:athlete-profile:v1')).toBeNull()
     expect(window.localStorage.getItem('mvp-pwa-starter:preferences:v1')).toBeNull()
   })

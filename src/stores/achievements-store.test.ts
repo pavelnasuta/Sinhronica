@@ -1,6 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { ACHIEVEMENTS_STORAGE_KEY, useAchievementsStore } from './achievements-store'
+import { useAthleteProfileStore } from './athlete-profile-store'
+import { useRoleProfileStore } from './role-profile-store'
 
 const draft = {
   performedOn: '2026-04-10',
@@ -13,6 +15,8 @@ const draft = {
 beforeEach(() => {
   localStorage.clear()
   useAchievementsStore.setState({ achievements: [], storageStatus: 'ready' })
+  useAthleteProfileStore.setState({ profile: null })
+  useRoleProfileStore.setState({ profile: null })
 })
 
 afterEach(() => {
@@ -41,6 +45,27 @@ describe('useAchievementsStore', () => {
     useAchievementsStore.getState().update(created.id, { ...draft, score: 9.5, medal: 'silver' })
 
     expect(useAchievementsStore.getState().achievements).toEqual([expect.objectContaining({ id: created.id, createdAt: created.createdAt, updatedAt: '2026-04-11T10:00:00.000Z', score: 9.5, medal: 'silver' })])
+  })
+
+  it('persists an optional awarded sport rank with an achievement', () => {
+    const created = useAchievementsStore.getState().create({ ...draft, awardedRank: 'I спортивный разряд' })
+
+    expect(created).toMatchObject({ awardedRank: 'I спортивный разряд' })
+    expect(JSON.parse(localStorage.getItem(ACHIEVEMENTS_STORAGE_KEY) ?? '[]')).toEqual([expect.objectContaining({ awardedRank: 'I спортивный разряд' })])
+  })
+
+  it('recalculates the athlete rank after editing and deleting verified awards without lowering a manual rank', () => {
+    useAthleteProfileStore.setState({ profile: { name: 'Алина', birthDate: '2014-11-16', city: 'Казань', sportRank: 'МС', manualSportRank: 'МС' } })
+    const higher = useAchievementsStore.getState().create({ ...draft, awardedRank: 'КМС' })
+    const lower = useAchievementsStore.getState().create({ ...draft, eventName: 'Весенний старт', awardedRank: 'I спортивный разряд' })
+    if (!higher || !lower) throw new Error('expected awards')
+
+    expect(useAthleteProfileStore.getState().profile).toMatchObject({ sportRank: 'МС', verifiedAwardRank: 'КМС' })
+    useAchievementsStore.getState().update(higher.id, { ...draft, awardedRank: 'I спортивный разряд' })
+    expect(useAthleteProfileStore.getState().profile).toMatchObject({ sportRank: 'МС', verifiedAwardRank: 'I спортивный разряд' })
+    useAchievementsStore.getState().remove(lower.id)
+    useAchievementsStore.getState().remove(higher.id)
+    expect(useAthleteProfileStore.getState().profile).toMatchObject({ sportRank: 'МС' })
   })
 
   it('clears only achievement data', () => {

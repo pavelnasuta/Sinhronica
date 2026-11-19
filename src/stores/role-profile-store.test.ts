@@ -19,8 +19,8 @@ describe('role profile store', () => {
     }
 
     expect(useRoleProfileStore.getState().save(profile)).toBe(true)
-    expect(useRoleProfileStore.getState().profile).toEqual(profile)
-    expect(JSON.parse(window.localStorage.getItem(ROLE_PROFILE_STORAGE_KEY) ?? 'null')).toEqual({ version: 2, ...profile })
+    expect(useRoleProfileStore.getState().profile).toEqual({ ...profile, profile: { ...profile.profile, children: [{ ...profile.profile.children[0], manualSportRank: 'II юношеский разряд' }] } })
+    expect(JSON.parse(window.localStorage.getItem(ROLE_PROFILE_STORAGE_KEY) ?? 'null')).toEqual({ version: 3, ...profile, profile: { ...profile.profile, children: [{ ...profile.profile.children[0], manualSportRank: 'II юношеский разряд' }] } })
   })
 
   it('migrates an existing parent profile to one child with an unselected rank', () => {

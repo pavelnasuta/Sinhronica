@@ -3,11 +3,13 @@ import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, expect, it } from 'vitest'
 
 import { ACHIEVEMENTS_STORAGE_KEY, useAchievementsStore } from '../../stores/achievements-store'
+import { useAthleteProfileStore } from '../../stores/athlete-profile-store'
 import { AchievementsPage } from './AchievementsPage'
 
 beforeEach(() => {
   localStorage.clear()
   useAchievementsStore.setState({ achievements: [], storageStatus: 'ready' })
+  useAthleteProfileStore.setState({ profile: null })
 })
 
 afterEach(() => {
@@ -71,4 +73,33 @@ it('explains when saved achievement data had to be recovered', () => {
   render(<AchievementsPage />)
 
   expect(screen.getByRole('status', { name: 'Состояние хранения' })).toHaveTextContent('Повреждённые локальные данные были пропущены.')
+})
+
+it('offers an optional rank award when recording an athlete achievement', async () => {
+  const user = userEvent.setup()
+  render(<AchievementsPage />)
+
+  await user.click(screen.getByRole('button', { name: 'Добавить достижение' }))
+
+  expect(screen.getByLabelText('Получен новый разряд')).toHaveValue('')
+  await user.selectOptions(screen.getByLabelText('Получен новый разряд'), 'I спортивный разряд')
+  await user.type(screen.getByLabelText('Соревнование или событие'), 'Кубок Федерации')
+  await user.type(screen.getByLabelText('Балл'), '9')
+  await user.click(screen.getByRole('button', { name: 'Сохранить достижение' }))
+
+  expect(useAchievementsStore.getState().achievements.at(-1)).toMatchObject({ awardedRank: 'I спортивный разряд' })
+})
+
+it('updates the athlete profile rank after saving an awarded rank', async () => {
+  useAthleteProfileStore.setState({ profile: { name: 'Алина', birthDate: '2014-11-16', city: 'Казань', sportRank: 'дельфиник' } })
+  const user = userEvent.setup()
+  render(<AchievementsPage />)
+
+  await user.click(screen.getByRole('button', { name: 'Добавить достижение' }))
+  await user.selectOptions(screen.getByLabelText('Получен новый разряд'), 'КМС')
+  await user.type(screen.getByLabelText('Соревнование или событие'), 'Кубок Федерации')
+  await user.type(screen.getByLabelText('Балл'), '9')
+  await user.click(screen.getByRole('button', { name: 'Сохранить достижение' }))
+
+  expect(useAthleteProfileStore.getState().profile).toMatchObject({ sportRank: 'КМС', verifiedAwardRank: 'КМС' })
 })

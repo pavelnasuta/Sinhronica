@@ -38,7 +38,7 @@ it('migrates an existing athlete to the role profile without sending them throug
 
   expect(screen.getByRole('heading', { name: 'Привет, Алина' })).toBeVisible()
   await waitFor(() => expect(JSON.parse(localStorage.getItem(ROLE_PROFILE_STORAGE_KEY) ?? 'null')).toEqual({
-    version: 2,
+    version: 3,
     role: 'athlete',
     profile: { name: 'Алина', birthDate: '2014-11-16', city: 'Казань', sportRank: 'дельфиник' },
   }))
@@ -52,7 +52,7 @@ it('opens a parent workspace with only parent navigation', async () => {
 
   expect(screen.getByRole('heading', { name: 'Привет, Елена' })).toBeVisible()
   expect(screen.getAllByRole('link', { name: 'Бюджет' })).toHaveLength(2)
-  expect(screen.getAllByRole('link', { name: 'Фигуры' })).toHaveLength(2)
+  expect(screen.queryAllByRole('link', { name: 'Фигуры' })).toHaveLength(0)
   expect(screen.queryByRole('link', { name: 'Номера' })).not.toBeInTheDocument()
   await user.click(screen.getByRole('button', { name: 'Начать новый профиль' }))
   await user.click(screen.getByRole('button', { name: 'Удалить и начать заново' }))

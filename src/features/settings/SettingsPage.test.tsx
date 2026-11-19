@@ -1,6 +1,6 @@
-import { render, screen } from '@testing-library/react'
+import { cleanup, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { beforeEach, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, expect, it, vi } from 'vitest'
 
 import { useAthleteProfileStore } from '../../stores/athlete-profile-store'
 import { useRoleProfileStore } from '../../stores/role-profile-store'
@@ -18,6 +18,18 @@ beforeEach(() => {
   useFigureProgressStore.setState({ progress: [], storageStatus: 'ready' })
   useRoutinesStore.setState({ routines: [], storageStatus: 'ready' })
   useTrainingDiaryStore.setState({ entries: [], storageStatus: 'ready' })
+})
+
+afterEach(cleanup)
+
+it('renders the same sharing card for a parent profile', () => {
+  useRoleProfileStore.setState({ profile: { role: 'parent', profile: { name: 'Елена', city: 'Казань', children: [{ id: 'child-1', name: 'Алина', sportRank: 'дельфиник' }] } } })
+
+  render(<SettingsPage onBack={vi.fn()} />)
+
+  expect(screen.getByRole('heading', { name: 'Поделиться Синхроникой' })).toBeVisible()
+  expect(screen.getByRole('button', { name: 'Поделиться приложением с друзьями' })).toBeVisible()
+  expect(screen.getByRole('presentation')).toHaveAttribute('src', expect.stringContaining('onboarding/practice.webp'))
 })
 
 it('updates athlete profile and links feedback to Pavel', async () => {

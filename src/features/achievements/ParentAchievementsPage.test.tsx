@@ -42,3 +42,22 @@ it('filters parent achievements by child and assigns a child on create', async (
 
   expect(useAchievementsStore.getState().achievements.at(-1)).toMatchObject({ eventName: 'Старт Маши', childId: 'child-2' })
 })
+
+it('shows each child name on a parent card and awards a selected rank to that child', async () => {
+  const user = userEvent.setup()
+  render(<AchievementsPage parentChildren={parentChildren} />)
+
+  expect(screen.getAllByTestId('achievement-card').map((card) => card.textContent).join(' ')).toContain('Алина')
+  expect(screen.getAllByTestId('achievement-card').map((card) => card.textContent).join(' ')).toContain('Маша')
+  await user.click(screen.getByRole('button', { name: 'Добавить достижение' }))
+  await user.selectOptions(screen.getByLabelText('Для ребёнка'), 'child-2')
+  await user.type(screen.getByLabelText('Соревнование или событие'), 'Кубок Маши — разряд')
+  await user.type(screen.getByLabelText('Балл'), '9')
+  await user.selectOptions(screen.getByLabelText('Получен новый разряд'), 'КМС')
+  await user.click(screen.getByRole('button', { name: 'Сохранить достижение' }))
+
+  expect(useRoleProfileStore.getState().profile).toMatchObject({ role: 'parent', profile: { children: [
+    { id: 'child-1', sportRank: 'КМС' },
+    { id: 'child-2', sportRank: 'КМС' },
+  ] } })
+})

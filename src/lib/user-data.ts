@@ -16,7 +16,7 @@ import { IDEAS_STORAGE_KEY } from '../stores/ideas-store'
 import { ROLE_PROFILE_STORAGE_KEY } from '../stores/role-profile-store'
 
 export type UserDataExport = {
-  version: 5
+  version: 6
   exportedAt: string
   profile: AthleteProfile
   ideas: Idea[]
@@ -27,10 +27,10 @@ export type UserDataExport = {
   preferences: { theme: ThemePreference }
 }
 
-export type UserDataImport = Omit<UserDataExport, 'version'> & { version: 4 | 5 }
+export type UserDataImport = Omit<UserDataExport, 'version'> & { version: 4 | 5 | 6 }
 
 export function serializeUserData({ profile, ideas, achievements, figureProgress, routines, trainingDiary, theme }: Omit<UserDataExport, 'version' | 'exportedAt' | 'preferences'> & { theme: ThemePreference }): string {
-  return JSON.stringify({ version: 5, exportedAt: new Date().toISOString(), profile, ideas, achievements, figureProgress, routines, trainingDiary, preferences: { theme } }, null, 2)
+  return JSON.stringify({ version: 6, exportedAt: new Date().toISOString(), profile, ideas, achievements, figureProgress, routines, trainingDiary, preferences: { theme } }, null, 2)
 }
 
 function parseRecords<T>(value: unknown, parser: (record: unknown) => T | null): T[] {
@@ -45,7 +45,7 @@ export function parseUserDataImport(input: string): UserDataImport {
     const raw: unknown = JSON.parse(input)
     if (!raw || typeof raw !== 'object') throw new Error()
     const data = raw as Record<string, unknown>
-    const version = data.version === 4 || data.version === 5 ? data.version : null
+    const version = data.version === 4 || data.version === 5 || data.version === 6 ? data.version : null
     if (!version || typeof data.exportedAt !== 'string' || Number.isNaN(Date.parse(data.exportedAt))) throw new Error()
     const profile = athleteProfileSchema.safeParse(data.profile)
     if (!profile.success || !isValidBirthDate(profile.data.birthDate)) throw new Error()
@@ -55,7 +55,7 @@ export function parseUserDataImport(input: string): UserDataImport {
     const importedTheme = (preferences as Record<string, unknown>).theme
     if (!['light', 'dark', 'system'].includes(importedTheme as string)) throw new Error()
     const theme: ThemePreference = importedTheme === 'light' ? 'light' : 'dark'
-    return { version, exportedAt: data.exportedAt, profile: profile.data, ideas, achievements: parseRecords(data.achievements, parseStoredAchievement), figureProgress: parseRecords(data.figureProgress, parseStoredFigureProgress), routines: parseRecords(data.routines, parseStoredRoutine), trainingDiary: version === 5 ? parseRecords(data.trainingDiary, parseStoredTrainingEntry) : [], preferences: { theme } }
+    return { version, exportedAt: data.exportedAt, profile: profile.data, ideas, achievements: parseRecords(data.achievements, parseStoredAchievement), figureProgress: parseRecords(data.figureProgress, parseStoredFigureProgress), routines: parseRecords(data.routines, parseStoredRoutine), trainingDiary: version === 4 ? [] : parseRecords(data.trainingDiary, parseStoredTrainingEntry), preferences: { theme } }
   } catch {
     throw new Error('Неверный файл резервной копии')
   }
@@ -70,8 +70,9 @@ export function restoreUserData(data: UserDataImport, targetStorage?: Pick<Stora
   }
   if (!storage) return false
   const writes: Array<[string, string | null]> = [
-    [ROLE_PROFILE_STORAGE_KEY, JSON.stringify({ version: 1, role: 'athlete', profile: data.profile })],
-    [ATHLETE_PROFILE_STORAGE_KEY, JSON.stringify({ version: 2, profile: data.profile })],
+    [ROLE_PROFILE_STORAGE_KEY, JSON.stringify({ version: 3, role: 'athlete', profile: data.profile })],
+    [ATHLETE_PROFILE_STORAGE_KEY, JSON.stringify({ version: 3, profile: data.profile })],
+    ['sinhronica:athlete-profile:v2', null],
     ['sinhronica:athlete-profile:v1', null],
     [IDEAS_STORAGE_KEY, serializeExportPayload(data.ideas)],
     [ACHIEVEMENTS_STORAGE_KEY, JSON.stringify(data.achievements)],

@@ -1,3 +1,5 @@
+import type { SportRank } from '../../stores/sport-ranks'
+
 export const DISCIPLINES = ['figures', 'combo', 'team', 'acrobatics', 'duet', 'solo', 'mixed-duet', 'custom'] as const
 export type AchievementDiscipline = (typeof DISCIPLINES)[number]
 
@@ -32,6 +34,7 @@ export type AchievementDraft = {
   customDiscipline?: string
   score: number
   medal: AchievementMedal
+  awardedRank?: SportRank
   childId?: AchievementChildId
 }
 

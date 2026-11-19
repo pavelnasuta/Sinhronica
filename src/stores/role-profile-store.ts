@@ -3,6 +3,7 @@ import { create } from 'zustand'
 
 import { createSafeStorage, type SafeStorage } from '../lib/browser-storage'
 import { athleteProfileSchema } from './athlete-profile-store'
+import { highestSportRank, SPORT_RANKS, type SportRank } from './sport-ranks'
 
 export const ROLE_PROFILE_STORAGE_KEY = 'sinhronica:role-profile:v1'
 
@@ -11,22 +12,15 @@ export type UserRole = (typeof USER_ROLES)[number]
 
 export const PARENT_SPORT_RANKS = [
   'Не указан',
-  'дельфиник',
-  'III юношеский разряд',
-  'II юношеский разряд',
-  'I юношеский разряд',
-  'III спортивный разряд',
-  'II спортивный разряд',
-  'I спортивный разряд',
-  'КМС',
-  'МС',
-  'МСМК',
+  ...SPORT_RANKS,
 ] as const
 
 export const parentChildSchema = z.object({
   id: z.string().regex(/^child-[12]$/),
   name: z.string().trim().min(2).max(50),
   sportRank: z.enum(PARENT_SPORT_RANKS),
+  manualSportRank: z.enum(PARENT_SPORT_RANKS).optional(),
+  verifiedAwardRank: z.enum(SPORT_RANKS).optional(),
 })
 
 export const parentProfileSchema = z.object({
@@ -59,12 +53,13 @@ export type ParentProfile = z.infer<typeof parentProfileSchema>
 export type ParentChild = z.infer<typeof parentChildSchema>
 export type CoachProfile = z.infer<typeof coachProfileSchema>
 
-type PersistedRoleProfile = { version: 2 } & RoleProfile
+type PersistedRoleProfile = { version: 3 } & RoleProfile
 type LegacyParentRoleProfile = { version: 1; role: 'parent'; profile: z.infer<typeof legacyParentProfileSchema> }
 
 type RoleProfileState = {
   profile: RoleProfile | null
   save: (profile: RoleProfile) => boolean
+  syncChildAwardRank: (childId: string, rank: SportRank | undefined) => boolean
   clear: () => void
 }
 
@@ -97,9 +92,14 @@ export function parsePersistedRoleProfile(raw: string | null): RoleProfile | nul
   if (!raw) return null
   try {
     const parsed: unknown = JSON.parse(raw)
-    const current = z.object({ version: z.literal(2) }).and(roleProfileSchema).safeParse(parsed)
+    const current = z.object({ version: z.union([z.literal(2), z.literal(3)]) }).and(roleProfileSchema).safeParse(parsed)
     if (current.success) {
-      return { role: current.data.role, profile: current.data.profile } as RoleProfile
+      if (current.data.role !== 'parent') return { role: current.data.role, profile: current.data.profile } as RoleProfile
+      return { role: 'parent', profile: { ...current.data.profile, children: current.data.profile.children.map((child) => {
+        const manualSportRank = child.manualSportRank ?? child.sportRank
+        const sportRank = manualSportRank === 'Не указан' ? child.verifiedAwardRank ?? manualSportRank : highestSportRank([manualSportRank, child.verifiedAwardRank]) ?? manualSportRank
+        return { ...child, sportRank, manualSportRank }
+      }) } }
     }
     const legacy = z.object({ version: z.literal(1), role: z.literal('parent'), profile: legacyParentProfileSchema }).safeParse(parsed)
     return legacy.success ? migrateLegacyParent(legacy.data) : null
@@ -108,16 +108,30 @@ export function parsePersistedRoleProfile(raw: string | null): RoleProfile | nul
 
 const storage = getStorage()
 
-export const useRoleProfileStore = create<RoleProfileState>((set) => ({
+function normalizeRoleProfile(input: RoleProfile): RoleProfile {
+  if (input.role !== 'parent') return input
+  return { role: 'parent', profile: { ...input.profile, children: input.profile.children.map((child) => {
+    const manualSportRank = child.manualSportRank ?? child.sportRank
+    const sportRank = manualSportRank === 'Не указан' ? child.verifiedAwardRank ?? manualSportRank : highestSportRank([manualSportRank, child.verifiedAwardRank]) ?? manualSportRank
+    return { ...child, sportRank, manualSportRank }
+  }) } }
+}
+
+export const useRoleProfileStore = create<RoleProfileState>((set, get) => ({
   profile: parsePersistedRoleProfile(storage.getItem(ROLE_PROFILE_STORAGE_KEY)),
   save: (input) => {
     const parsed = roleProfileSchema.safeParse(input)
     if (!parsed.success) return false
-    const profile = parsed.data
-    const persisted: PersistedRoleProfile = { version: 2, ...profile }
+    const profile = normalizeRoleProfile(parsed.data)
+    const persisted: PersistedRoleProfile = { version: 3, ...profile }
     if (!storage.setItem(ROLE_PROFILE_STORAGE_KEY, JSON.stringify(persisted))) return false
     set({ profile })
     return true
+  },
+  syncChildAwardRank: (childId, verifiedAwardRank) => {
+    const current = get().profile
+    if (!current || current.role !== 'parent') return false
+    return get().save({ role: 'parent', profile: { ...current.profile, children: current.profile.children.map((child) => child.id === childId ? { ...child, verifiedAwardRank, manualSportRank: child.manualSportRank ?? child.sportRank } : child) } })
   },
   clear: () => { storage.removeItem(ROLE_PROFILE_STORAGE_KEY); set({ profile: null }) },
 }))

@@ -17,7 +17,6 @@ export const parentRoutes: AppRoute[] = [
   { name: 'home', label: 'Главная' },
   { name: 'budget', label: 'Бюджет' },
   { name: 'achievements', label: 'Достижения' },
-  { name: 'figures', label: 'Фигуры' },
   { name: 'useful', label: 'Полезное' },
 ]
 

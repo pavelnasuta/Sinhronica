@@ -26,6 +26,10 @@ it('filters parent expenses by child and category and recalculates summaries', a
   const user = userEvent.setup()
   render(<BudgetPage />)
 
+  expect(screen.getByRole('button', { name: 'Фильтры расходов' })).toHaveAttribute('aria-expanded', 'false')
+  await user.click(screen.getByRole('button', { name: 'Фильтры расходов' }))
+  expect(screen.getByLabelText('Ребёнок')).toBeVisible()
+  expect(screen.getByLabelText('Категория')).toBeVisible()
   expect(screen.getByText('Алина')).toBeVisible()
   expect(screen.getByText('Маша')).toBeVisible()
   expect(screen.getByText('Оба ребёнка')).toBeVisible()
@@ -44,7 +48,7 @@ it('selects the child or shared allocation while adding an expense', async () =>
   const user = userEvent.setup()
   render(<BudgetPage />)
 
-  await user.click(screen.getByRole('button', { name: 'Добавить' }))
+  await user.click(screen.getByRole('button', { name: 'Расход' }))
   expect(screen.getByLabelText('Для кого расход')).toHaveValue('child-1')
   await user.selectOptions(screen.getByLabelText('Для кого расход'), 'both')
   await user.type(screen.getByLabelText('Сумма'), '800')

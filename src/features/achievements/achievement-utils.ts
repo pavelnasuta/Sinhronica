@@ -1,4 +1,5 @@
 import { DISCIPLINES, MEDALS, type Achievement, type AchievementDiscipline, type AchievementDraft, type AchievementMedal, type ScoreChange } from './achievement-types'
+import { SPORT_RANKS } from '../../stores/sport-ranks'
 
 function formatLocalDate(date = new Date()): string {
   const year = date.getFullYear()
@@ -29,7 +30,7 @@ export function normalizeAchievementDraft(draft: AchievementDraft): AchievementD
   const eventName = draft.eventName.trim()
   const customDiscipline = draft.customDiscipline?.trim()
   const score = Number(draft.score)
-  if (!eventName || !isDiscipline(draft.discipline) || !isMedal(draft.medal) || !isValidPerformanceDate(draft.performedOn) || !Number.isFinite(score) || score < 0) return null
+  if (!eventName || !isDiscipline(draft.discipline) || !isMedal(draft.medal) || !isValidPerformanceDate(draft.performedOn) || !Number.isFinite(score) || score < 0 || (draft.awardedRank && !SPORT_RANKS.includes(draft.awardedRank))) return null
   if (draft.discipline === 'custom' && !customDiscipline) return null
 
   return {
@@ -39,6 +40,7 @@ export function normalizeAchievementDraft(draft: AchievementDraft): AchievementD
     ...(draft.discipline === 'custom' ? { customDiscipline } : {}),
     score: Math.round(score * 1000) / 1000,
     medal: draft.medal,
+    ...(draft.awardedRank ? { awardedRank: draft.awardedRank } : {}),
     ...(draft.childId ? { childId: draft.childId } : {}),
   }
 }
