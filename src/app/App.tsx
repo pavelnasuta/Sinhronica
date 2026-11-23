@@ -118,6 +118,7 @@ export function App() {
 
   if (!activeRoleProfile) return <><OfflineStatus /><Onboarding initialProfile={athleteProfile && !hasSportRank(athleteProfile) ? athleteProfile : undefined} onProfileCreated={() => setShowInstallGuide(true)} /><PwaUpdateNotice /><Toaster richColors position="top-center" closeButton /></>
   if (showInstallGuide) return <><OfflineStatus /><PostProfileInstallGuide onFinish={() => setShowInstallGuide(false)} /><PwaUpdateNotice /><Toaster richColors position="top-center" closeButton /></>
+  if (activeRoleProfile.role === 'parent' && activeRoute === 'settings') return <><OfflineStatus /><SettingsPage onBack={() => navigate('home')} /><PwaUpdateNotice /><Toaster richColors position="top-center" closeButton /></>
   if (activeRoleProfile.role !== 'athlete') {
     const roleRoutes = activeRoleProfile.role === 'parent' ? parentRoutes : coachRoutes
     const parentToolRoutes: RouteName[] = ['settings', 'figures', 'figures-catalog', 'figures-calculator', 'metronome', 'box-breathing']

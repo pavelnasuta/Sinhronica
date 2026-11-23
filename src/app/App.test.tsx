@@ -57,6 +57,16 @@ it('opens a parent workspace with only parent navigation', async () => {
   expect(screen.getByText('Алина · Не указан')).toBeVisible()
 })
 
+it('keeps parent settings inside the standard single horizontal gutter', () => {
+  useRoleProfileStore.setState({ profile: { role: 'parent', profile: { name: 'Елена', city: 'Казань', children: [{ id: 'child-1', name: 'Алина', sportRank: 'Не указан' }] } } })
+  window.location.hash = 'settings'
+
+  const { container } = render(<App />)
+
+  expect(screen.getByRole('heading', { name: 'Настройки' })).toBeVisible()
+  expect(container.querySelectorAll('main')).toHaveLength(1)
+})
+
 it('routes a parent through every useful tool and returns each tool to Useful', async () => {
   const user = userEvent.setup()
   useRoleProfileStore.setState({ profile: { role: 'parent', profile: { name: 'Елена', city: 'Казань', children: [{ id: 'child-1', name: 'Алина', sportRank: 'Не указан' }] } } })
