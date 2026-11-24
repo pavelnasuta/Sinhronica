@@ -70,9 +70,9 @@ export function BoxBreathingPage({ onBack }: { onBack: () => void }) {
 
   return (
     <div className="sinhronica-settings-shell flex flex-col bg-background">
-      <main className="sinhronica-screen mx-auto w-full max-w-xl px-4 py-6 pb-[calc(2rem+env(safe-area-inset-bottom))] sm:px-6 sm:py-8">
+      <main className="sinhronica-screen mx-auto w-full max-w-xl px-4 pb-[calc(2rem+env(safe-area-inset-bottom))] pt-3 sm:px-6 sm:pb-8 sm:pt-4">
         <section className="space-y-5" aria-labelledby="box-breathing-title">
-      <Button type="button" variant="ghost" className="-ml-3 gap-2" onClick={onBack}><ArrowLeft className="h-4 w-4" aria-hidden="true" />К полезному</Button>
+      <Button type="button" variant="ghost" className="gap-2" onClick={onBack}><ArrowLeft className="h-4 w-4" aria-hidden="true" />К полезному</Button>
       <header className="space-y-2"><p className="text-xs font-extrabold uppercase tracking-[0.09em] text-[color:var(--eyebrow)]">Перед стартом</p><h1 id="box-breathing-title" className="text-3xl font-extrabold tracking-[-0.04em]">Квадратное дыхание</h1><p className="text-base leading-7 text-muted-foreground">Короткий спокойный ритм, чтобы собраться перед выступлением или соревнованиями.</p></header>
 
       <article className="sinhronica-breathing-card overflow-hidden rounded-[var(--radius-xl)] border p-5 text-center shadow-[var(--shadow-card)] sm:p-6">

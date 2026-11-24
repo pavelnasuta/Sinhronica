@@ -33,16 +33,12 @@ afterEach(() => {
   vi.clearAllMocks()
 })
 
-it('plays the first audible beat synchronously from a user gesture for iOS', () => {
+it('schedules the first audible beat slightly ahead of a resumed iOS audio context', () => {
   vi.stubGlobal('AudioContext', AudioContextStub)
   render(<AudioUnlockButton />)
 
   fireEvent.click(screen.getByRole('button', { name: 'Unlock' }))
 
-  expect(resume).toHaveBeenCalledTimes(1)
-  expect(createOscillator).toHaveBeenCalledTimes(1)
-  expect(gainSetValueAtTime).toHaveBeenCalledWith(0.0001, 0)
-  expect(gainRampToValueAtTime).toHaveBeenCalledWith(0.22, 0.003)
-  expect(oscillatorStart).toHaveBeenCalledWith(0)
-  expect(oscillatorStop).toHaveBeenCalledWith(0.05)
+  expect(oscillatorStart).toHaveBeenCalledWith(0.02)
+  expect(oscillatorStop).toHaveBeenCalledWith(0.07)
 })

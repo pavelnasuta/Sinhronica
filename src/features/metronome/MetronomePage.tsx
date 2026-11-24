@@ -70,7 +70,7 @@ export function MetronomePage({ onBack }: { onBack: () => void }) {
 
   return (
     <div className="sinhronica-settings-shell flex flex-col bg-background">
-      <main className="sinhronica-screen mx-auto w-full max-w-xl px-4 py-6 pb-[calc(6rem+env(safe-area-inset-bottom))] sm:px-6 sm:py-8">
+      <main className="sinhronica-screen mx-auto w-full max-w-xl px-4 pb-[calc(6rem+env(safe-area-inset-bottom))] pt-3 sm:px-6 sm:pb-8 sm:pt-4">
         <section className="space-y-5" aria-labelledby="metronome-title">
       <Button type="button" variant="ghost" className="gap-2" onClick={onBack}><ArrowLeft className="h-4 w-4" aria-hidden="true" />К полезному</Button>
       <header className="space-y-2"><p className="text-xs font-extrabold uppercase tracking-[0.09em] text-[color:var(--eyebrow)]">Тренировочный ритм</p><h1 id="metronome-title" className="text-3xl font-extrabold tracking-[-0.04em]">Метроном</h1><p className="text-base leading-7 text-muted-foreground">Держи темп на суше, в хореографии и при разучивании счёта.</p></header>

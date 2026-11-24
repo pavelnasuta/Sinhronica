@@ -50,7 +50,9 @@ export function useMetronomeAudio({ running, bpm, startedAt }: MetronomeAudioPro
     if (!context) return
 
     if (context.state !== 'running') void context.resume().catch(() => undefined)
-    const firstBeatAt = context.currentTime
+    // iOS can resume the context a moment after the gesture. Scheduling at 0 can
+    // already be in the past then, so retain the gesture but give the first click a lead.
+    const firstBeatAt = context.currentTime + 0.02
     playClick(context, firstBeatAt, true)
     nextBeatRef.current = { time: firstBeatAt + 60 / bpm, beat: 1 }
   }, [bpm, getContext])

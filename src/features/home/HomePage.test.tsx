@@ -7,10 +7,11 @@ import { HomePage } from './HomePage'
 const profile = { name: 'Алина', birthDate: '2014-11-16', city: 'Казань', sportRank: 'дельфиник' as const }
 const routine = { id: 'routine-1', title: 'Лазурь', context: 'training' as const, discipline: 'group' as const, programType: 'free' as const, ageGroup: 'Девушки 13–15 лет', activeAthleteCount: 8, reserveAthleteCount: 0, athleteNames: [], targetDurationSeconds: 180, blocks: [{ id: 'block-1', type: 'element' as const, title: 'Гибрид 1' }], createdAt: '2026-11-16T10:00:00.000Z', updatedAt: '2026-11-16T12:00:00.000Z' }
 const achievement = { id: 'achievement-1', performedOn: '2026-11-10', eventName: 'Первенство города', discipline: 'team' as const, score: 82.5, medal: 'gold' as const, createdAt: '2026-11-10T12:00:00.000Z', updatedAt: '2026-11-10T12:00:00.000Z' }
+const today = new Date().toISOString().slice(0, 10)
 afterEach(cleanup)
 
 it('uses a red trace for a heavy post-training feeling on the home diary card', () => {
-  render(<HomePage profile={profile} routines={[]} figureProgress={[]} achievements={[]} entries={[{ id: 'practice', performedOn: '2026-11-17', types: ['water'], mood: 'heavy', createdAt: '2026-11-17T12:00:00.000Z', updatedAt: '2026-11-17T12:00:00.000Z' }]} onNavigate={vi.fn()} />)
+  render(<HomePage profile={profile} routines={[]} figureProgress={[]} achievements={[]} entries={[{ id: 'practice', performedOn: today, types: ['water'], mood: 'heavy', createdAt: '2026-11-17T12:00:00.000Z', updatedAt: '2026-11-17T12:00:00.000Z' }]} onNavigate={vi.fn()} />)
 
   expect(screen.getByTitle('Тяжело')).toHaveClass('bg-red-400')
 })
