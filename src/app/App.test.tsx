@@ -111,6 +111,25 @@ it('opens a coach workspace without athlete diary or parent budget', async () =>
   expect(screen.getByRole('heading', { name: 'Карточка номера — в одном месте' })).toBeVisible()
 })
 
+it('routes a coach through every useful tool instead of falling back to home', async () => {
+  const user = userEvent.setup()
+  useRoleProfileStore.setState({ profile: { role: 'coach', profile: { name: 'Ольга' } } })
+  window.location.hash = 'useful'
+  render(<App />)
+
+  await user.click(screen.getByRole('button', { name: /Метроном/i }))
+  expect(screen.getByRole('heading', { name: 'Метроном' })).toBeVisible()
+  await user.click(screen.getByRole('button', { name: 'К полезному' }))
+  await user.click(screen.getByRole('button', { name: /Калькулятор баллов/i }))
+  expect(screen.getByRole('heading', { name: 'Калькулятор баллов' })).toBeVisible()
+  await user.click(screen.getByRole('button', { name: 'К полезному' }))
+  await user.click(screen.getByRole('button', { name: /Каталог фигур/i }))
+  expect(screen.getByRole('heading', { name: 'Каталог фигур' })).toBeVisible()
+  await user.click(screen.getByRole('button', { name: 'К полезному' }))
+  await user.click(screen.getByRole('button', { name: /Квадратное дыхание/i }))
+  expect(screen.getByRole('heading', { name: 'Квадратное дыхание' })).toBeVisible()
+})
+
 it('returns to the top when the active screen changes', async () => {
   useAthleteProfileStore.setState({ profile: { name: 'Алина', birthDate: '2014-11-16', city: 'Казань', sportRank: 'дельфиник' } })
   window.location.hash = 'home'

@@ -121,17 +121,17 @@ export function App() {
   if (activeRoleProfile.role === 'parent' && activeRoute === 'settings') return <><OfflineStatus /><SettingsPage onBack={() => navigate('home')} /><PwaUpdateNotice /><Toaster richColors position="top-center" closeButton /></>
   if (activeRoleProfile.role !== 'athlete') {
     const roleRoutes = activeRoleProfile.role === 'parent' ? parentRoutes : coachRoutes
-    const parentToolRoutes: RouteName[] = ['settings', 'figures', 'figures-catalog', 'figures-calculator', 'metronome', 'box-breathing']
-    const roleRoute = roleRoutes.some((route) => route.name === activeRoute) || (activeRoleProfile.role === 'parent' && parentToolRoutes.includes(activeRoute)) ? activeRoute : 'home'
+    const toolRoutes: RouteName[] = ['figures-catalog', 'figures-calculator', 'metronome', 'box-breathing']
+    const roleRoute = roleRoutes.some((route) => route.name === activeRoute) || toolRoutes.includes(activeRoute) ? activeRoute : 'home'
     const page = roleRoute === 'figures'
       ? <FiguresCatalogPage onBack={() => navigate('home')} backLabel="К главной" audience={activeRoleProfile.role} />
-      : roleRoute === 'figures-catalog' && activeRoleProfile.role === 'parent'
-        ? <FiguresCatalogPage onBack={() => navigate('useful')} audience="parent" />
-        : roleRoute === 'figures-calculator' && activeRoleProfile.role === 'parent'
+      : roleRoute === 'figures-catalog'
+        ? <FiguresCatalogPage onBack={() => navigate('useful')} audience={activeRoleProfile.role} />
+        : roleRoute === 'figures-calculator'
           ? <FiguresCalculatorPage onBack={() => navigate('useful')} />
-          : roleRoute === 'metronome' && activeRoleProfile.role === 'parent'
+          : roleRoute === 'metronome'
             ? <MetronomePage onBack={() => navigate('useful')} />
-            : roleRoute === 'box-breathing' && activeRoleProfile.role === 'parent'
+            : roleRoute === 'box-breathing'
               ? <BoxBreathingPage onBack={() => navigate('useful')} />
               : roleRoute === 'routines'
                 ? <RoutinesPage audience="coach" />
